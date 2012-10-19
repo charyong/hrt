@@ -1,0 +1,25 @@
+{
+	"name": "tpm",
+	"version": "1.0.2",
+	"description": "Tudou Debug Server for Frontend",
+	"author": "Longhao Luo <lhluo@tudou.com>",
+	"license": "BSD",
+	"main": "./lib/main.js",
+	"bin" : {
+		"tpm": "./bin/tpm"
+	},
+	"scripts": {
+		"test": "node ./test/"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/tudouui/tpm.git"
+	},
+	"keywords": [
+		"TPM", "debug", "rewrite"
+	],
+	"dependencies"  : {
+		"mime":"~1.2.7",
+		"request": "~2.9.203"
+	}
+}
