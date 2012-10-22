@@ -15,7 +15,6 @@ Thumbs.db
 *.swp
 *.swo
 *.log
-node_modules/
 .buildpath
 .settings
 .yml

@@ -3,6 +3,12 @@
 
 TPM 是前端调试服务器，通过配置把线上资源文件指向到本地。
 
+## 安装
+
+···
+git clone git://github.com/tudouui/tpm.git
+···
+
 ## 使用方法
 
 1. 修改本地 hosts 文件，把域名指向到本地。
@@ -32,14 +38,13 @@ TPM 是前端调试服务器，通过配置把线上资源文件指向到本地�
 
 	// 重写指定请求
 	exports.rewriteMap = [
-		['/js/lib/tuilib2', '/js/lib/tuilib2_combo'],
-		['/js/page/channels/v2/ch.js', '/js/page/channels/v2/ch.js']
+		['/js/lib/tuilib2.js', '/js/lib/tuilib2_combo.js'],
+		['/js/page/channels/v2/ch.js', '/js/page/channels/v2/ch_combo.js'],
+		['/skin/__g/img/ui/nav/nav.png']
 	];
 	```
 
-3. 启动调试服务。
-
-	`tpm server`
+3. 在命令行输入 `tpm` ，或在 Windows 下双击 `tpm.cmd` ，启动调试服务。
 
 代理服务器 httpd.conf
 =================================================
