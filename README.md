@@ -1,12 +1,12 @@
-前端调试服务器
+Rewrite
 =================================================
 
-TPM 是前端调试服务器，通过配置把线上资源文件指向到本地。
+Rewrite 是前端调试工具，根据配置把指定的线上静态文件指向到本地。
 
 ## 安装
 
 ```
-git clone git://github.com/tudouui/tpm.git
+git clone git://github.com/tudouui/rewrite.git
 ```
 
 ## 使用方法
@@ -44,7 +44,7 @@ git clone git://github.com/tudouui/tpm.git
 	];
 	```
 
-3. 在命令行输入 `tpm` ，或在 Windows 下双击 `tpm.cmd` ，启动调试服务。
+3. 在命令行输入 `rewrite` ，或在 Windows 下双击 `rewrite.cmd` ，启动调试服务。
 
 代理服务器 httpd.conf
 =================================================

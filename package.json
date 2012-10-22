@@ -1,19 +1,19 @@
 {
-	"name": "tpm",
-	"version": "1.0.2",
-	"description": "Tudou Debug Server for Frontend",
+	"name": "rewrite",
+	"version": "1.0.0",
+	"description": "Tudou Rewrite Tools for Frontend",
 	"author": "Longhao Luo <lhluo@tudou.com>",
-	"license": "BSD",
+	"license": "GPL",
 	"main": "./lib/main.js",
 	"bin" : {
-		"tpm": "./bin/tpm"
+		"tpm": "./rewrite"
 	},
 	"scripts": {
 		"test": "node ./test/"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git://github.com/tudouui/tpm.git"
+		"url": "git://github.com/tudouui/rewrite.git"
 	},
 	"keywords": [
 		"TPM", "debug", "rewrite"

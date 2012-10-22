@@ -89,7 +89,7 @@ function main() {
 
 	}).listen(config.port);
 
-	console.log('TPM Server runing at port: ' + config.port);
+	console.log('Rewrite Server runing at port: ' + config.port);
 }
 
 main();
