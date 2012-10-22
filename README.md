@@ -5,9 +5,9 @@ TPM 是前端调试服务器，通过配置把线上资源文件指向到本地�
 
 ## 安装
 
-···
+```
 git clone git://github.com/tudouui/tpm.git
-···
+```
 
 ## 使用方法
 
