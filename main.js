@@ -9,6 +9,8 @@ var request = require('request');
 
 var config = require('./config');
 
+var build = require('./' + config.buildType);
+
 var toString = Object.prototype.toString;
 
 function isRegExp(val) {
@@ -24,7 +26,7 @@ function printLocalFile(response, absoluteUrl, newPathname) {
 
 	var contentType = getContentType(newPathname);
 
-	console.log('[rewrite] ' + absoluteUrl + ' -> ' + absolutePath + newPathname);
+	console.log('[rewrite] ' + absoluteUrl + ' -> ' + absolutePath);
 
 	fs.exists(absolutePath, function (exists) {
 		if (!exists) {
@@ -37,6 +39,8 @@ function printLocalFile(response, absoluteUrl, newPathname) {
 				console.log('[error] cannot read file "' + absolutePath + '".');
 				return;
 			}
+
+			file = build.merge(file);
 
 			response.writeHead(200, {'Content-Type': contentType});
 			response.write(file, 'binary');
@@ -60,7 +64,7 @@ function main() {
 		var globalMap = config.globalRewriteMap;
 		var rewriteMap = config.rewriteMap;
 		var absoluteUrl = 'http://' + host + pathname;
-		var proxyUrl = config.proxyHost + requestUrl;
+		var proxyUrl = config.proxy + requestUrl;
 
 		// rewrite path by globalRewriteMap
 		if (globalMap && globalMap.length == 2) {

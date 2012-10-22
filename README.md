@@ -27,11 +27,11 @@ git clone git://github.com/tudouui/rewrite.git
 	// 本地文件的根目录
 	exports.root = 'D:\\Projects\\static-trunk';
 
-	// 端口
+	// 本地 HTTP 服务端口
 	exports.port = 80;
 
-	// 备用域名或代理，通过此域名下载远程文件
-	exports.proxyHost = 'http://10.5.111.2:8085';
+	// 代理域名，通过此域名下载远程文件
+	exports.proxy = 'http://10.5.111.2:8085';
 
 	// 重写所有请求
 	exports.globalRewriteMap = [/([^?]+)_\d+(\.(?:js|css))/, '$1$2'];
