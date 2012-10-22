@@ -1,4 +1,4 @@
 #!/usr/bin/env node
 
 exports.cli = true;
-require(require('path').resolve(__filename, '../lib/main.js'));
+require(require('path').resolve(__filename, '../main.js'));

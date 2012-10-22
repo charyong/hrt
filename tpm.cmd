@@ -1,3 +1,3 @@
 @echo off
 
-node.exe "%~dp0\lib\main.js" %*
+node.exe "%~dp0\main.js" %*
