@@ -1,35 +1,10 @@
 
-var fs = require('fs');
-
 var iconv = require('iconv-lite');
 
 var config = require('./config');
+var util = require('./util');
 
 var pathMap = {};
-
-function each(obj, fn) {
-	for (var key in obj) {
-
-		if (obj.hasOwnProperty(key)) {
-			if (fn.call(obj[key], key, obj[key]) === false) {
-				break;
-			}
-		}
-
-	}
-}
-
-function readFileSync(filePath, encoding) {
-	var fileStr = '';
-
-	try {
-		fileStr = fs.readFileSync(filePath, encoding);
-	} catch (e) {
-		console.log('[error] cannot read file "' + filePath + '".');
-	}
-
-	return fileStr;
-}
 
 function grepPath(src) {
 	var regExp = /(?:\*|\\\\) +@import +([\/\w\-\.]+)/ig;
@@ -45,11 +20,12 @@ function grepPath(src) {
 		var absolutePath = config.root + '/' + filePath;
 
 		if (typeof pathMap[filePath] == 'undefined') {
-
-			var fileStr = readFileSync(absolutePath, 'binary');
+			var fileStr;
 
 			if (/\.tpl$/.test(filePath)) {
-				fileStr = iconv.decode(iconv.encode(fileStr, 'utf8'), 'binary');
+				fileStr = util.readFileSync(absolutePath, 'utf8');
+			} else {
+				fileStr = util.readFileSync(absolutePath, 'gbk');
 			}
 
 			if (/\.js$/.test(filePath)) {
@@ -62,13 +38,20 @@ function grepPath(src) {
 
 }
 
-function merge(src) {
+function merge(absolutePath) {
+	// 二进制文件
+	if (!/(\.js|\.css|\.tpl)$/.test(absolutePath)) {
+		return util.readFileSync(absolutePath);
+	}
+
+	// 文本文件
+	var src = util.readFileSync(absolutePath, 'gbk');
 
 	grepPath(src);
 
 	var dist = '';
 
-	each(pathMap, function(filePath, fileStr) {
+	util.each(pathMap, function(filePath, fileStr) {
 
 		if (/\.tpl$/.test(filePath)) {
 			var varName = filePath.replace(/^js\/|\.tpl$/g, '');
@@ -83,7 +66,9 @@ function merge(src) {
 
 	});
 
-	return dist + '\n' + src;
+	dist += '\n' + src;
+
+	return iconv.toEncoding(dist, 'gbk');
 }
 
 exports.merge = merge;

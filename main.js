@@ -1,5 +1,4 @@
 
-var fs = require('fs');
 var http = require('http');
 var url = require('url');
 var path = require('path');
@@ -8,14 +7,9 @@ var mime = require('mime');
 var request = require('request');
 
 var config = require('./config');
+var util = require('./util');
 
 var build = require('./' + config.buildType);
-
-var toString = Object.prototype.toString;
-
-function isRegExp(val) {
-	return toString.call(val) === '[object RegExp]';
-}
 
 function getContentType(path) {
 	return mime.lookup(path);
@@ -28,25 +22,11 @@ function printLocalFile(response, absoluteUrl, newPathname) {
 
 	console.log('[rewrite] ' + absoluteUrl + ' -> ' + absolutePath);
 
-	fs.exists(absolutePath, function (exists) {
-		if (!exists) {
-			console.log('[error] file "' + absolutePath + '" was not found.');
-			return;
-		}
+	var buffer = build.merge(absolutePath);
 
-		fs.readFile(absolutePath, 'binary', function(err, file) {
-			if (err) {
-				console.log('[error] cannot read file "' + absolutePath + '".');
-				return;
-			}
-
-			file = build.merge(file);
-
-			response.writeHead(200, {'Content-Type': contentType});
-			response.write(file, 'binary');
-			response.end();
-		});
-	});
+	response.writeHead(200, {'Content-Type': contentType});
+	response.write(buffer);
+	response.end();
 }
 
 function main() {
@@ -78,7 +58,7 @@ function main() {
 			var replaceText = row.length == 1 ? rule : row[1];
 
 			// return local file
-			if (isRegExp(rule) && rule.test(pathname) || typeof rule == 'string' && pathname.indexOf(rule) >= 0) {
+			if (util.isRegExp(rule) && rule.test(pathname) || typeof rule == 'string' && pathname.indexOf(rule) >= 0) {
 				var newPathname = pathname.replace(rule, replaceText);
 				printLocalFile(resp, absoluteUrl, newPathname);
 				return;
