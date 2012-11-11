@@ -13,15 +13,11 @@ git clone git://github.com/tudouui/rewrite.git
 
 1. 修改浏览器代理设置，IP： `127.0.0.1` ，端口： `2222` 。
 
-2. 创建配置文件 `config/my.js` ，添加跳转规则。
+2. 创建配置文件 `./config/my.js` ，添加跳转规则。
 
 	```js
-	// 重写所有请求
-	exports.globalRewriteMap = [/([^?]+)_\d+(\.(?:js|css))/, '$1$2'];
-
-	// 重写指定请求
 	var root = 'D:\\Projects\\static-trunk';
-	exports.rewriteMap = [
+	exports.map = [
 		['http://js.tudouui.com/js/lib/tuilib2.js', root + '/js/lib/tuilib2_combo.js']
 	];
 	```
@@ -29,7 +25,7 @@ git clone git://github.com/tudouui/rewrite.git
 3. 在命令行输入 `rewrite` ，启动HTTP服务。
 
 	```
-	rewrite --config=config/my.js
-	rewrite --config=config/my.js --port=8080
-	rewrite --config=config/my.js --debug=true
+	rewrite --config=./config/my.js
+	rewrite --config=./config/my.js --port=8080
+	rewrite --config=./config/my.js --debug=true
 	```

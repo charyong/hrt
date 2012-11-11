@@ -18,10 +18,13 @@
 	"keywords": [
 		"frontend", "proxy", "debug", "rewrite", "server"
 	],
-	"dependencies"  : {
+	"dependencies": {
 		"mime": "~1.2.7",
 		"request": "~2.9.203",
 		"optimist": "~0.3.5",
 		"iconv-lite": "~0.2.5"
-	}
+	},
+	"devDependencies": {
+		"tap": "~0.3.2"
+	},
 }
