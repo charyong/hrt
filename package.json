@@ -1,7 +1,7 @@
 {
 	"name": "rewrite",
-	"version": "1.0.0",
-	"description": "Tudou Rewrite Tools for Frontend",
+	"version": "0.0.1",
+	"description": "HTTP Rewrite Tool for Frontend",
 	"author": "Longhao Luo <lhluo@tudou.com>",
 	"license": "GPL",
 	"main": "./lib/main.js",
@@ -16,10 +16,12 @@
 		"url": "git://github.com/tudouui/rewrite.git"
 	},
 	"keywords": [
-		"TPM", "debug", "rewrite"
+		"frontend", "proxy", "debug", "rewrite", "server"
 	],
 	"dependencies"  : {
-		"mime":"~1.2.7",
-		"request": "~2.9.203"
+		"mime": "~1.2.7",
+		"request": "~2.9.203",
+		"optimist": "~0.3.5",
+		"iconv-lite": "~0.2.5"
 	}
 }

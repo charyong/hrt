@@ -1,18 +1,38 @@
 
-var http = require('http');
-var url = require('url');
-var path = require('path');
+var HTTP = require('http');
+var URL = require('url');
+var FS = require('fs');
 
-var mime = require('mime');
-var request = require('request');
+var MIME = require('mime');
+var REQUEST = require('request');
 
-var config = require('./config');
-var util = require('./util');
+var UTIL = require('./util');
 
-var build = require('./' + config.buildType);
+var OPTIMIST = require('optimist');
+
+OPTIMIST.usage([
+	'Usage: rewrite --config=[/path/to/config.js] --port=[number] --debug=[true/false]\n\n',
+	'Examples:\n',
+	'rewrite --config=config/my.js\n',
+	'rewrite --config=config/my.js --port=8080\n',
+	'rewrite --config=config/my.js --debug=true'
+].join(''));
+
+var ARGV = OPTIMIST.argv;
+
+if (ARGV.help) {
+	OPTIMIST.showHelp();
+	process.exit();
+}
+
+var PORT = UTIL.undef(ARGV.port, 2222);
+var CONFIG_FILE = UTIL.undef(ARGV.config, __dirname + '/config/default.js');
+var DEBUG = UTIL.undef(ARGV.debug, false);
+
+var CONFIG = require(CONFIG_FILE);
 
 function getContentType(path) {
-	return mime.lookup(path);
+	return MIME.lookup(path);
 }
 
 function printLocalFile(response, absoluteUrl, newPathname) {
@@ -30,16 +50,22 @@ function printLocalFile(response, absoluteUrl, newPathname) {
 }
 
 function main() {
-	http.createServer(function(req, resp) {
-		var headers = req.headers;
-		var host = headers.host;
-		var requestUrl = req.url;
-		var pathname = url.parse(requestUrl).pathname;
-
-		// skip favicon
-		if (pathname.indexOf('favicon.ico') > -1) {
-			return;
+	// reload config
+	FS.watch(CONFIG_FILE, function(event, filename) {
+		if(event == 'change') {
+			delete require.cache[CONFIG_FILE];
+			CONFIG = require(CONFIG_FILE);
+			console.log(CONFIG.rewriteMap);
 		}
+	});
+	// start server
+	HTTP.createServer(function(request, response) {
+		config = require('./config');
+
+		var headers = request.headers;
+		var host = headers.host;
+		var requestUrl = request.url;
+		var pathname = URL.parse(requestUrl).pathname;
 
 		var globalMap = config.globalRewriteMap;
 		var rewriteMap = config.rewriteMap;
@@ -58,9 +84,9 @@ function main() {
 			var replaceText = row.length == 1 ? rule : row[1];
 
 			// return local file
-			if (util.isRegExp(rule) && rule.test(pathname) || typeof rule == 'string' && pathname.indexOf(rule) >= 0) {
+			if (UTIL.isRegExp(rule) && rule.test(pathname) || typeof rule == 'string' && pathname.indexOf(rule) >= 0) {
 				var newPathname = pathname.replace(rule, replaceText);
-				printLocalFile(resp, absoluteUrl, newPathname);
+				printLocalFile(response, absoluteUrl, newPathname);
 				return;
 			}
 		}
@@ -69,11 +95,11 @@ function main() {
 		if (config.debug) {
 			console.log('[get] ' + absoluteUrl + ', real URL:' + proxyUrl);
 		}
-		req.pipe(request(proxyUrl)).pipe(resp);
+		request.pipe(REQUEST(absoluteUrl)).pipe(response);
 
-	}).listen(config.port);
+	}).listen(PORT);
 
-	console.log('Rewrite Server runing at port: ' + config.port);
+	console.log('Rewrite Server runing at port: ' + PORT);
 }
 
 main();
