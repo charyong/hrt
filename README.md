@@ -1,12 +1,12 @@
-Rewrite
+HTTP Rewrite Tool
 =================================================
 
-Rewrite 是前端调试工具，根据配置把指定的线上静态文件指向到本地。
+HRT 是前端调试工具，根据配置把指定的线上静态文件指向到本地。
 
 ## 安装
 
 ```
-git clone git://github.com/tudouui/rewrite.git
+git clone git://github.com/tudouui/hrt.git
 ```
 
 ## 使用方法
@@ -22,10 +22,10 @@ git clone git://github.com/tudouui/rewrite.git
 	];
 	```
 
-3. 在命令行输入 `rewrite` ，启动HTTP服务。
+3. 在命令行输入 `hrt` ，启动HTTP服务。
 
 	```
-	rewrite --config=./config/my.js
-	rewrite --config=./config/my.js --port=8080
-	rewrite --config=./config/my.js --debug=true
+	hrt --config=./config/my.js
+	hrt --config=./config/my.js --port=8080
+	hrt --config=./config/my.js --debug=true
 	```
