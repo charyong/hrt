@@ -1,7 +1,7 @@
 HTTP Rewrite Tool
 =================================================
 
-HRT 是前端调试工具，根据配置把指定的线上静态文件指向到本地。
+HRT 是前端代理工具，根据配置把指定的URL指向到本地或其它URL。
 
 ## 安装
 
@@ -15,10 +15,26 @@ git clone git://github.com/tudouui/hrt.git
 
 2. 创建配置文件 `./config/my.js` ，添加跳转规则。
 
+	指定单个文件。
 	```js
 	var root = 'D:\\Projects\\static-trunk';
 	exports.map = [
 		['http://js.tudouui.com/js/lib/tuilib2.js', root + '/js/lib/tuilib2_combo.js']
+	];
+	```
+
+	也可以把整个目录指向到本地。
+	```js
+	var root = 'D:\\Projects\\static-trunk';
+	exports.map = [
+		['http://js.tudouui.com/js/lib', root + '/js/lib']
+	];
+	```
+
+	替换部分URL。
+	```js
+	exports.map = [
+		['/dist/', '/src/']
 	];
 	```
 
