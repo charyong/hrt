@@ -6,7 +6,7 @@
 	"license": "GPL",
 	"main": "./lib/main.js",
 	"bin" : {
-		"tpm": "./hrt"
+		"hrt": "./hrt"
 	},
 	"scripts": {
 		"test": "node ./test/"
