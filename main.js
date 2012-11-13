@@ -14,9 +14,9 @@ var OPTIMIST = require('optimist');
 OPTIMIST.usage([
 	'Usage: rewrite --config=[/path/to/config.js] --port=[number] --debug=[true/false]\n\n',
 	'Examples:\n',
-	'rewrite --config=config/my.js\n',
-	'rewrite --config=config/my.js --port=8080\n',
-	'rewrite --config=config/my.js --debug=true',
+	'rewrite --config=./config/my.js\n',
+	'rewrite --config=./config/my.js --port=8080\n',
+	'rewrite --config=./config/my.js --debug=true',
 ].join(''));
 
 var ARGV = OPTIMIST.argv;
