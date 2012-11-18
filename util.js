@@ -62,6 +62,7 @@ function rewrite(map, url) {
 			var end = url.substr(index + from.length);
 
 			if (FS.existsSync(to)) {
+				end = end.replace(/\?.*$/, '');
 				to = PATH.resolve(to + end);
 				return [2, to];
 			}

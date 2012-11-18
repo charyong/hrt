@@ -1,10 +1,8 @@
 
 var HTTP = require('http');
-var URL = require('url');
 var PATH = require('path');
 var FS = require('fs');
 
-var MIME = require('mime');
 var REQUEST = require('request');
 
 var UTIL = require('./util');
@@ -46,16 +44,10 @@ function main() {
 	// start server
 	HTTP.createServer(function(request, response) {
 
-		var headers = request.headers;
-		var host = headers.host;
-		var requestUrl = request.url;
-		var pathname = URL.parse(requestUrl).pathname;
-
+		var url = request.url;
 		var before = CONFIG.before;
 		var map = CONFIG.map;
 		var after = CONFIG.after;
-
-		var url = 'http://' + host + pathname;
 
 		if (DEBUG) {
 			console.log('[get] ' + url);
@@ -81,8 +73,15 @@ function main() {
 		}
 
 		if (type == 2) {
-			//request.pipe(FS.createWriteStream(to).pipe(REQUEST(url))).pipe(response);
-			FS.createReadStream(to).pipe(request).pipe(response);
+			REQUEST(url, function (error, res) {
+				var contentType = res.headers['content-type'];
+
+				var buffer = UTIL.readFileSync(to);
+
+				response.setHeader("Content-Type", contentType);
+				response.write(buffer);
+				response.end();
+			});
 			return;
 		}
 

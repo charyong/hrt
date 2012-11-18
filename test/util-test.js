@@ -71,7 +71,7 @@ test('util.rewrite (to local file: partial URL)', function(t) {
 	t.equal(result[1], 'D:\\project\\kindsoft\\ke4\\kindeditor.js');
 
 	// 3
-	var url = 'http://www.kindsoft.net/ke4/themes/default/default.css';
+	var url = 'http://www.kindsoft.net/ke4/themes/default/default.css?t=20121118.css';
 	var result = util.rewrite(map, url);
 	t.equal(result[0], 2);
 	t.equal(result[1], 'D:\\project\\kindsoft\\ke4\\themes\\default\\default.css');
