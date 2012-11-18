@@ -5,9 +5,15 @@ HRT 是前端代理工具，根据配置把指定的URL指向到本地或其它U
 
 ## 安装
 
-```
-git clone git://github.com/tudouui/hrt.git
-```
+1. 源代码安装
+	```
+	git clone git://github.com/tudouui/hrt.git
+	```
+
+2. NPM安装
+	```
+	npm install hrt -g
+	```
 
 ## 使用方法
 

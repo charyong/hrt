@@ -34,15 +34,6 @@ CONFIG_FILE = PATH.resolve(CONFIG_FILE);
 
 var CONFIG = require(CONFIG_FILE);
 
-function returnLocalFile(response, path) {
-	var contentType = MIME.lookup(path);
-	var buffer = UTIL.readFileSync(path);
-
-	response.writeHead(200, {'Content-Type': contentType});
-	response.write(buffer);
-	response.end();
-}
-
 function main() {
 	// reload config
 	FS.watch(CONFIG_FILE, function(event, filename) {
@@ -70,24 +61,28 @@ function main() {
 			console.log('[get] ' + url);
 		}
 
+		var from = url;
+
 		if (before) {
-			url = before(url);
+			from = before(from);
 		}
 
-		var result = UTIL.parse(map, url);
+		var result = UTIL.rewrite(map, from);
 
+		var type = result[0];
 		var to = result[1];
 
 		if (after) {
 			to = after(to);
 		}
 
-		if (result[0] > 0) {
+		if (type > 0) {
 			console.log('[rewrite] ' + url + ' -> ' + to);
 		}
 
-		if (result[0] == 2) {
-			returnLocalFile(response, to);
+		if (type == 2) {
+			//request.pipe(FS.createWriteStream(to).pipe(REQUEST(url))).pipe(response);
+			FS.createReadStream(to).pipe(request).pipe(response);
 			return;
 		}
 

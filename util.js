@@ -44,7 +44,7 @@ function readFileSync(filePath, encoding) {
 // 0: no rewrite
 // 1: remote rewrite
 // 2: local rewrite
-function parse(map, url) {
+function rewrite(map, url) {
 	for (var i = 0, len = map.length; i < len; i++) {
 		var row = map[i];
 
@@ -78,4 +78,4 @@ exports.each = each;
 exports.isRegExp = isRegExp;
 exports.undef = undef;
 exports.readFileSync = readFileSync;
-exports.parse = parse;
+exports.rewrite = rewrite;
