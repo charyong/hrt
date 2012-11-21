@@ -2,6 +2,7 @@
 var HTTP = require('http');
 var PATH = require('path');
 var FS = require('fs');
+var MIME = require('mime');
 
 var REQUEST = require('request');
 
@@ -73,15 +74,13 @@ function main() {
 		}
 
 		if (type == 2) {
-			REQUEST(url, function (error, res) {
-				var contentType = res.headers['content-type'];
+			var contentType = MIME.lookup(to);
 
-				var buffer = UTIL.readFileSync(to);
+			var buffer = UTIL.readFileSync(to);
 
-				response.setHeader("Content-Type", contentType);
-				response.write(buffer);
-				response.end();
-			});
+			response.setHeader("Content-Type", contentType);
+			response.write(buffer);
+			response.end();
 			return;
 		}
 
