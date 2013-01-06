@@ -1,16 +1,15 @@
 
-var HTTP = require('http');
-var PATH = require('path');
-var FS = require('fs');
-var MIME = require('mime');
+var HttpProxy = require('http-proxy');
+var Path = require('path');
+var Fs = require('fs');
+var Url = require('url');
+var Mime = require('mime');
 
-var REQUEST = require('request');
+var Util = require('./util');
 
-var UTIL = require('./util');
+var Optimist = require('optimist');
 
-var OPTIMIST = require('optimist');
-
-OPTIMIST.usage([
+Optimist.usage([
 	'Usage: rewrite --config=[/path/to/config.js] --port=[number] --debug=[true/false]\n\n',
 	'Examples:\n',
 	'rewrite --config=./config/my.js\n',
@@ -18,24 +17,24 @@ OPTIMIST.usage([
 	'rewrite --config=./config/my.js --debug=true',
 ].join(''));
 
-var ARGV = OPTIMIST.argv;
+var ARGV = Optimist.argv;
 
 if (ARGV.help) {
-	OPTIMIST.showHelp();
+	Optimist.showHelp();
 	process.exit();
 }
 
-var PORT = UTIL.undef(ARGV.port, 2222);
-var CONFIG_FILE = UTIL.undef(ARGV.config, __dirname + '/config/default.js');
-var DEBUG = UTIL.undef(ARGV.debug, false);
+var PORT = Util.undef(ARGV.port, 2222);
+var CONFIG_FILE = Util.undef(ARGV.config, __dirname + '/config/default.js');
+var DEBUG = Util.undef(ARGV.debug, false);
 
-CONFIG_FILE = PATH.resolve(CONFIG_FILE);
+CONFIG_FILE = Path.resolve(CONFIG_FILE);
 
 var CONFIG = require(CONFIG_FILE);
 
 function main() {
 	// reload config
-	FS.watch(CONFIG_FILE, function(event, filename) {
+	Fs.watch(CONFIG_FILE, function(event, filename) {
 		if(event == 'change') {
 			delete require.cache[CONFIG_FILE];
 			CONFIG = require(CONFIG_FILE);
@@ -43,7 +42,7 @@ function main() {
 	});
 
 	// start server
-	HTTP.createServer(function(request, response) {
+	HttpProxy.createServer(function(request, response, proxy) {
 
 		var url = request.url;
 		var before = CONFIG.before;
@@ -60,7 +59,7 @@ function main() {
 			from = before(from);
 		}
 
-		var result = UTIL.rewrite(map, from);
+		var result = Util.rewrite(map, from);
 
 		var type = result[0];
 		var to = result[1];
@@ -74,9 +73,9 @@ function main() {
 		}
 
 		if (type == 2) {
-			var contentType = MIME.lookup(to);
+			var contentType = Mime.lookup(to);
 
-			var buffer = UTIL.readFileSync(to);
+			var buffer = Util.readFileSync(to);
 
 			response.setHeader("Content-Type", contentType);
 			response.write(buffer);
@@ -84,7 +83,12 @@ function main() {
 			return;
 		}
 
-		request.pipe(REQUEST(to)).pipe(response);
+		var urlObj = Url.parse(to);
+
+		proxy.proxyRequest(request, response, {
+			host: urlObj.hostname,
+			port: urlObj.port || 80
+		});
 
 	}).listen(PORT);
 

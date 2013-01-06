@@ -22,7 +22,8 @@
 		"mime": "~1.2.7",
 		"request": "~2.9.203",
 		"optimist": "~0.3.5",
-		"iconv-lite": "~0.2.5"
+		"iconv-lite": "~0.2.5",
+		"http-proxy": "~0.8.7"
 	},
 	"devDependencies": {
 		"tap": "~0.3.2"

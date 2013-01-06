@@ -1,7 +1,7 @@
 
-var PATH = require('path');
-var FS = require('fs');
-var ICONV = require('iconv-lite');
+var Path = require('path');
+var Fs = require('fs');
+var Iconv = require('iconv-lite');
 
 function each(obj, fn) {
 	for (var key in obj) {
@@ -27,7 +27,7 @@ function readFileSync(filePath, encoding) {
 	var buffer = new Buffer('');
 
 	try {
-		buffer = FS.readFileSync(filePath);
+		buffer = Fs.readFileSync(filePath);
 	} catch (e) {
 		console.log(e.toString());
 	}
@@ -36,7 +36,7 @@ function readFileSync(filePath, encoding) {
 		return buffer;
 	}
 
-	var fileStr = ICONV.fromEncoding(buffer, encoding);
+	var fileStr = Iconv.fromEncoding(buffer, encoding);
 
 	return fileStr;
 }
@@ -61,9 +61,9 @@ function rewrite(map, url) {
 			var start = url.substr(0, index);
 			var end = url.substr(index + from.length);
 
-			if (FS.existsSync(to)) {
+			if (Fs.existsSync(to)) {
 				end = end.replace(/\?.*$/, '');
-				to = PATH.resolve(to + end);
+				to = Path.resolve(to + end);
 				return [2, to];
 			}
 
