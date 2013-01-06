@@ -1,4 +1,5 @@
 
+var Http = require('http');
 var HttpProxy = require('http-proxy');
 var Path = require('path');
 var Fs = require('fs');
@@ -42,7 +43,7 @@ function main() {
 	});
 
 	// start server
-	HttpProxy.createServer(function(request, response, proxy) {
+	Http.createServer(function(request, response) {
 
 		var url = request.url;
 		var before = CONFIG.before;
@@ -85,10 +86,14 @@ function main() {
 
 		var urlObj = Url.parse(to);
 
-		proxy.proxyRequest(request, response, {
-			host: urlObj.hostname,
-			port: urlObj.port || 80
+		var proxy = new HttpProxy.HttpProxy({
+			target : {
+				host : urlObj.hostname,
+				port : urlObj.port || 80,
+			},
 		});
+
+		proxy.proxyRequest(request, response);
 
 	}).listen(PORT);
 
