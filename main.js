@@ -88,7 +88,7 @@ function main() {
 
 		var proxy = new HttpProxy.HttpProxy({
 			target : {
-				host : parsed.host,
+				host : parsed.hostname,
 				port : parsed.port || 80,
 			},
 		});
