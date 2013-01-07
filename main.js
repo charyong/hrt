@@ -1,11 +1,11 @@
 
 var Http = require('http');
-var HttpProxy = require('http-proxy');
 var Path = require('path');
 var Fs = require('fs');
 var Url = require('url');
 var Mime = require('mime');
 
+var HttpProxy = require('./http-proxy');
 var Util = require('./util');
 
 var Optimist = require('optimist');
