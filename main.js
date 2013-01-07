@@ -84,12 +84,12 @@ function main() {
 			return;
 		}
 
-		var urlObj = Url.parse(to);
+		var parsed = Url.parse(to);
 
 		var proxy = new HttpProxy.HttpProxy({
 			target : {
-				host : urlObj.hostname,
-				port : urlObj.port || 80,
+				host : parsed.host,
+				port : parsed.port || 80,
 			},
 		});
 
