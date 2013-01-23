@@ -21,8 +21,14 @@ Optimist.usage([
 
 var ARGV = Optimist.argv;
 
-if (ARGV.help) {
+if (ARGV.help || ARGV.h) {
 	Optimist.showHelp();
+	process.exit();
+}
+
+if (ARGV.version || ARGV.v) {
+	var packageInfo = JSON.parse(Fs.readFileSync(__dirname + '/package.json', 'utf-8'));
+	console.log(packageInfo.version);
 	process.exit();
 }
 
