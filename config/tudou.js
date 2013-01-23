@@ -19,4 +19,4 @@ exports.before = function(url) {
 
 exports.merge = function(path, callback) {
 	Tudou.merge(localRoot, path, callback);
-}
+};

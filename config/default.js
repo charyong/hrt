@@ -15,4 +15,4 @@ exports.before = function(url) {
 
 exports.merge = function(path, callback) {
 	Tudou.mergeTui2(localRoot, path, callback);
-}
+};

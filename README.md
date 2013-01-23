@@ -44,6 +44,32 @@ HRT 是前端代理工具，根据配置把指定的URL指向到本地或其它U
 	];
 	```
 
+	移除版本号。
+	```js
+	exports.before = function(url) {
+		return url.replace(/([^?]+)_\d+(\.(?:js|css))/, '$1$2');
+	};
+	```
+
+	返回本地文件内容时，修改文件内容。
+	```js
+	var Mime = require('mime');
+	var Util = require('../util');
+
+	exports.merge = function(path, callback) {
+		var contentType = Mime.lookup(path);
+		// 所有JS头部添加注释
+		if (/\.js$/.test(path)) {
+			var content = Util.readFileSync(path, 'utf-8');
+			return callback(contentType, '/* test /*\n' + content);
+		}
+		// 其它请求
+		var buffer = Util.readFileSync(path);
+		return callback(contentType, buffer);
+	};
+	```
+	注：当配置文件里有 `exports.merge` 时会接管所有请求，所以在程序逻辑里需要加入文件类型判断。
+
 3. 在命令行输入 `hrt` ，启动HTTP服务。
 
 	```
