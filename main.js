@@ -4,6 +4,7 @@ var Path = require('path');
 var Fs = require('fs');
 var Url = require('url');
 var Mime = require('mime');
+var Request = require('request');
 
 var HttpProxy = require('./http-proxy');
 var Util = require('./util');
@@ -33,6 +34,12 @@ CONFIG_FILE = Path.resolve(CONFIG_FILE);
 
 var CONFIG = require(CONFIG_FILE);
 
+function setResponse(response, contentType, buffer) {
+	response.setHeader('Content-Type', contentType);
+	response.write(buffer);
+	response.end();
+}
+
 function main() {
 	// reload config
 	Fs.watch(CONFIG_FILE, function(event, filename) {
@@ -49,6 +56,7 @@ function main() {
 		var before = CONFIG.before;
 		var map = CONFIG.map;
 		var after = CONFIG.after;
+		var merge = CONFIG.merge;
 
 		if (DEBUG) {
 			console.log('[get] ' + url);
@@ -74,13 +82,17 @@ function main() {
 		}
 
 		if (type == 2) {
-			var contentType = Mime.lookup(to);
+			if (merge) {
+				merge(to, function(contentType, buffer) {
+					setResponse(response, contentType, buffer);
+				});
+				return;
+			}
 
+			var contentType = Mime.lookup(to);
 			var buffer = Util.readFileSync(to);
 
-			response.setHeader("Content-Type", contentType);
-			response.write(buffer);
-			response.end();
+			setResponse(response, contentType, buffer);
 			return;
 		}
 

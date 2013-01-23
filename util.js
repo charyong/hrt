@@ -29,7 +29,7 @@ function readFileSync(filePath, encoding) {
 	try {
 		buffer = Fs.readFileSync(filePath);
 	} catch (e) {
-		console.log(e.toString());
+		console.error(e.toString());
 	}
 
 	if (!encoding) {
