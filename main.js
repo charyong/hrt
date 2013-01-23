@@ -65,6 +65,7 @@ function main() {
 		var merge = CONFIG.merge;
 
 		var me = {
+			config : CONFIG,
 			util : Util,
 			req : request,
 			res : response,
@@ -75,6 +76,12 @@ function main() {
 		}
 
 		var from = url;
+
+		// static server
+		if (!/^https?:\/\//.test(from)) {
+			map = CONFIG.serverRoot;
+			console.log(map, from, url);
+		}
 
 		if (before) {
 			from = before.call(me, from);

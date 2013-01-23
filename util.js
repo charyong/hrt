@@ -49,6 +49,13 @@ function loadPlugin(name) {
 // 1: remote rewrite
 // 2: local rewrite
 function rewrite(map, url) {
+	// string
+	if (typeof map == 'string') {
+		var to = map + url.replace(/^https?:\/\/[^\/]+|\?.*$/, '');
+		to = Path.resolve(to);
+		return [2, to];
+	}
+	// array
 	for (var i = 0, len = map.length; i < len; i++) {
 		var row = map[i];
 

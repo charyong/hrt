@@ -1,12 +1,12 @@
 
-var localRoot = 'D:\\Projects\\static-trunk\\v3';
+exports.serverRoot = 'D:\\Projects\\static-trunk';
 
 exports.map = [
-	['http://js.tudouui.com/v3/dist', localRoot + '/src'],
-	['http://css.tudouui.com/v3/dist', localRoot + '/src'],
-	['http://jstest.tudouui.com/v3/dist', localRoot + '/src'],
-	['http://csstest.tudouui.com/v3/dist', localRoot + '/src'],
-	['http://localhost:8888/static-trunk/v3/dist', localRoot + '/src'],
+	['http://js.tudouui.com/v3/dist', exports.serverRoot + '/v3/src'],
+	['http://css.tudouui.com/v3/dist', exports.serverRoot + '/v3/src'],
+	['http://jstest.tudouui.com/v3/dist', exports.serverRoot + '/v3/src'],
+	['http://csstest.tudouui.com/v3/dist', exports.serverRoot + '/v3/src'],
+	['http://localhost:8888/static-trunk/v3/dist', exports.serverRoot + '/v3/src'],
 ];
 
 exports.before = function(url) {
@@ -20,5 +20,5 @@ exports.before = function(url) {
 exports.merge = function(path, callback) {
 	var Tudou = this.util.loadPlugin('tudou');
 
-	Tudou.merge(localRoot, path, callback);
+	Tudou.merge.call(this, path, callback);
 };

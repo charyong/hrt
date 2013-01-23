@@ -7,7 +7,7 @@ var Iconv = require('iconv-lite');
 
 // URL移除版本号
 function stripVersionInfo(url) {
-	return url.replace(/([^?]+)_\d+(\.(?:js|css))/, '$1$2');
+	return url.replace(/([^?]+)_\d+(\.(?:js|css|swf))/i, '$1$2');
 }
 
 // CSS扩展名改成LESS
@@ -16,7 +16,9 @@ function cssToLess(url) {
 }
 
 // 合并本地文件
-function merge(root, path, callback) {
+function merge(path, callback) {
+	var root = this.config.serverRoot;
+
 	var dummyPath = path.split(Path.sep).join('/');
 
 	// CSS
@@ -24,7 +26,7 @@ function merge(root, path, callback) {
 		var content = Util.readFileSync(path, 'utf-8');
 
 		var parser = new(Less.Parser)({
-			paths: ['.', root + '/src/css']
+			paths: ['.', root + '/v3/src/css']
 		});
 
 		parser.parse(content, function(error, tree) {
@@ -40,7 +42,7 @@ function merge(root, path, callback) {
 	if (/src\/js\/g\.js$/.test(dummyPath)) {
 		var content = Util.readFileSync(path, 'utf-8');
 
-		var ozContent = Util.readFileSync(root + '/src/js/lib/oz.js', 'utf-8');
+		var ozContent = Util.readFileSync(root + '/v3/src/js/lib/oz.js', 'utf-8');
 
 		callback('application/javascript', ozContent + content);
 		return;
@@ -53,7 +55,8 @@ function merge(root, path, callback) {
 }
 
 // 合并TUI2文件
-function mergeTui2(root, path, callback) {
+function mergeTui2(path, callback) {
+	var root = this.config.serverRoot;
 
 	var pathMap = {};
 
