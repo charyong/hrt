@@ -80,7 +80,6 @@ function main() {
 		// static server
 		if (!/^https?:\/\//.test(from)) {
 			map = CONFIG.serverRoot;
-			console.log(map, from, url);
 		}
 
 		if (before) {
