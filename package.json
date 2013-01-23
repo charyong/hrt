@@ -1,6 +1,6 @@
 {
 	"name": "hrt",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "HTTP Rewrite Tool for Frontend",
 	"author": "Longhao Luo <lhluo@tudou.com>",
 	"license": "GPL",
