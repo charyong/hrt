@@ -6,8 +6,6 @@ exports.map = [
 	['http://jstest.tudouui.com/js/lib/tuilib2.js', localRoot + '/js/lib/tuilib2_src.js'],
 ];
 
-var Tudou = require('../plugins/tudou');
-
 exports.before = function(url) {
 	var Tudou = this.util.loadPlugin('tudou');
 

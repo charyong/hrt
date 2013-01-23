@@ -9,8 +9,6 @@ exports.map = [
 	['http://localhost:8888/static-trunk/v3/dist', localRoot + '/src'],
 ];
 
-var Tudou = require('../plugins/tudou');
-
 exports.before = function(url) {
 	var Tudou = this.util.loadPlugin('tudou');
 
