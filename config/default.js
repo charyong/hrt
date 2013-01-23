@@ -9,10 +9,14 @@ exports.map = [
 var Tudou = require('../plugins/tudou');
 
 exports.before = function(url) {
+	var Tudou = this.util.loadPlugin('tudou');
+
 	url = Tudou.stripVersionInfo(url);
 	return url;
 };
 
 exports.merge = function(path, callback) {
+	var Tudou = this.util.loadPlugin('tudou');
+
 	Tudou.mergeTui2(localRoot, path, callback);
 };

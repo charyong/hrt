@@ -41,6 +41,10 @@ function readFileSync(filePath, encoding) {
 	return fileStr;
 }
 
+function loadPlugin(name) {
+	return require(__dirname + '/plugins/' + name + '.js');
+}
+
 // 0: no rewrite
 // 1: remote rewrite
 // 2: local rewrite
@@ -78,5 +82,6 @@ function rewrite(map, url) {
 exports.each = each;
 exports.isRegExp = isRegExp;
 exports.undef = undef;
+exports.loadPlugin = loadPlugin;
 exports.readFileSync = readFileSync;
 exports.rewrite = rewrite;

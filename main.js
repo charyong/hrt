@@ -64,6 +64,12 @@ function main() {
 		var after = CONFIG.after;
 		var merge = CONFIG.merge;
 
+		var me = {
+			util : Util,
+			req : request,
+			res : response,
+		}
+
 		if (DEBUG) {
 			console.log('[get] ' + url);
 		}
@@ -71,7 +77,7 @@ function main() {
 		var from = url;
 
 		if (before) {
-			from = before(from);
+			from = before.call(me, from);
 		}
 
 		var result = Util.rewrite(map, from);
@@ -80,7 +86,7 @@ function main() {
 		var to = result[1];
 
 		if (after) {
-			to = after(to);
+			to = after.call(me, to);
 		}
 
 		if (type > 0) {
@@ -89,7 +95,7 @@ function main() {
 
 		if (type == 2) {
 			if (merge) {
-				merge(to, function(contentType, buffer) {
+				merge.call(me, to, function(contentType, buffer) {
 					setResponse(response, contentType, buffer);
 				});
 				return;
