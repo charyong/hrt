@@ -44,8 +44,7 @@ function merge(path, callback) {
 
 		var ozContent = Util.readFileSync(root + '/v3/src/js/lib/oz.js', 'utf-8');
 
-		callback('application/javascript', ozContent + content);
-		return;
+		return callback('application/javascript', ozContent + content);
 	}
 
 	var contentType = Mime.lookup(path);
