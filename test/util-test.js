@@ -14,25 +14,6 @@ test('util.rewrite (empty map)', function(t) {
 	t.end();
 });
 
-test('util.rewrite (replace partial URL)', function(t) {
-	var map = [
-		['http://js.tudouui.com/js/lib', 'http://css.tudouui.com/js/lib'],
-		['/dist/', '/src/'],
-	];
-
-	var url = 'http://js.tudouui.com/js/lib/tuilib2_10.js';
-	var result = util.rewrite(map, url);
-	t.equal(result[0], 1);
-	t.equal(result[1], 'http://css.tudouui.com/js/lib/tuilib2_10.js');
-
-	var url = 'http://js.tudouui.com/js/dist/jquery.js';
-	var result = util.rewrite(map, url);
-	t.equal(result[0], 1);
-	t.equal(result[1], 'http://js.tudouui.com/js/src/jquery.js');
-
-	t.end();
-});
-
 test('util.rewrite (to local file)', function(t) {
 	var root = 'D:\\project\\kindeditor';
 	var localPath = require('path').resolve(root + '/kindeditor.js');
@@ -43,7 +24,7 @@ test('util.rewrite (to local file)', function(t) {
 
 	var url = 'http://js.tudouui.com/js/lib/kindeditor-min.js';
 	var result = util.rewrite(map, url);
-	t.equal(result[0], 2);
+	t.equal(result[0], 1);
 	t.equal(result[1], 'D:\\project\\kindeditor\\kindeditor.js');
 
 	t.end();
@@ -58,7 +39,7 @@ test('util.rewrite (to local file: partial URL)', function(t) {
 	];
 	var url = 'http://js.tudouui.com/js/lib/kindeditor.js';
 	var result = util.rewrite(map, url);
-	t.equal(result[0], 2);
+	t.equal(result[0], 1);
 	t.equal(result[1], 'D:\\project\\kindeditor\\kindeditor.js');
 
 	// 2
@@ -67,13 +48,13 @@ test('util.rewrite (to local file: partial URL)', function(t) {
 	];
 	var url = 'http://www.kindsoft.net/ke4/kindeditor.js';
 	var result = util.rewrite(map, url);
-	t.equal(result[0], 2);
+	t.equal(result[0], 1);
 	t.equal(result[1], 'D:\\project\\kindsoft\\ke4\\kindeditor.js');
 
 	// 3
 	var url = 'http://www.kindsoft.net/ke4/themes/default/default.css?t=20121118.css';
 	var result = util.rewrite(map, url);
-	t.equal(result[0], 2);
+	t.equal(result[0], 1);
 	t.equal(result[1], 'D:\\project\\kindsoft\\ke4\\themes\\default\\default.css');
 
 	// 4
@@ -81,6 +62,33 @@ test('util.rewrite (to local file: partial URL)', function(t) {
 	var result = util.rewrite(map, url);
 	t.equal(result[0], 0);
 	t.equal(result[1], 'http://www.kindsoft.net/');
+
+	t.end();
+});
+
+test('util.rewrite (rewrite all)', function(t) {
+	var root = 'D:\\project\\kindeditor';
+	var localPath = require('path').resolve(root + '/kindeditor.js');
+
+	// 1
+	var map = [
+		['http://js.tudouui.com/js/lib/kindeditor-min.js', localPath],
+	];
+
+	var url = '/js/lib/kindeditor-min.js';
+	var result = util.rewrite(map, url, root);
+	t.equal(result[0], 1);
+	t.equal(result[1], 'D:\\project\\kindeditor\\kindeditor.js');
+
+	// 2
+	var map = [
+		['http://js.tudouui.com/js/lib/kindeditor-min.js', localPath],
+	];
+
+	var url = '/js/lib/kindeditor-all.js';
+	var result = util.rewrite(map, url, root);
+	t.equal(result[0], 1);
+	t.equal(result[1], 'D:\\project\\kindeditor\\js\\lib\\kindeditor-all.js');
 
 	t.end();
 });

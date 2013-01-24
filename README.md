@@ -1,7 +1,7 @@
 HTTP Rewrite Tool
 =================================================
 
-HRT 是前端代理工具，根据配置把指定的URL指向到本地或其它URL。
+HRT 是前端代理工具，根据配置把指定的URL指向到本地文件。
 
 ## 安装
 
@@ -29,18 +29,11 @@ HRT 是前端代理工具，根据配置把指定的URL指向到本地或其它U
 	];
 	```
 
-	也可以把整个目录指向到本地。
+	把整个目录指向到本地。
 	```js
 	var root = 'D:\\Projects\\static-trunk';
 	exports.map = [
 		['http://js.tudouui.com/js/lib', root + '/js/lib']
-	];
-	```
-
-	替换部分URL。
-	```js
-	exports.map = [
-		['/dist/', '/src/']
 	];
 	```
 

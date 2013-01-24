@@ -77,16 +77,13 @@ function main() {
 
 		var from = url;
 
-		// static server
-		if (!/^https?:\/\//.test(from)) {
-			map = CONFIG.serverRoot;
-		}
-
 		if (before) {
 			from = before.call(me, from);
 		}
 
-		var result = Util.rewrite(map, from);
+		var serverRoot = /^https?:\/\//.test(url) ? '' : CONFIG.serverRoot;
+
+		var result = Util.rewrite(map, from, serverRoot);
 
 		var type = result[0];
 		var to = result[1];
@@ -95,11 +92,9 @@ function main() {
 			to = after.call(me, to);
 		}
 
-		if (type > 0) {
+		if (type == 1) {
 			console.log('[rewrite] ' + url + ' -> ' + to);
-		}
 
-		if (type == 2) {
 			if (merge) {
 				merge.call(me, to, function(contentType, buffer) {
 					setResponse(response, contentType, buffer);

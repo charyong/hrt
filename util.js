@@ -45,17 +45,12 @@ function loadPlugin(name) {
 	return require(__dirname + '/plugins/' + name + '.js');
 }
 
+// return value: [status, url]
+// status:
 // 0: no rewrite
-// 1: remote rewrite
-// 2: local rewrite
-function rewrite(map, url) {
-	// string
-	if (typeof map == 'string') {
-		var to = map + url.replace(/^https?:\/\/[^\/]+|\?.*$/, '');
-		to = Path.resolve(to);
-		return [2, to];
-	}
-	// array
+// 1: rewrite
+function rewrite(map, url, serverRoot) {
+	// rewrite by map
 	for (var i = 0, len = map.length; i < len; i++) {
 		var row = map[i];
 
@@ -66,21 +61,26 @@ function rewrite(map, url) {
 		var from = row[0];
 		var to = row[1];
 
+		if (serverRoot) {
+			from = from.replace(/^https?:\/\/[^\/]+/, '');
+		}
+
 		var index = url.indexOf(from);
 
 		if (index >= 0) {
 			var start = url.substr(0, index);
 			var end = url.substr(index + from.length);
 
-			if (Fs.existsSync(to)) {
-				end = end.replace(/\?.*$/, '');
-				to = Path.resolve(to + end);
-				return [2, to];
-			}
-
-			to = start + to + end;
+			end = end.replace(/\?.*$/, '');
+			to = Path.resolve(to + end);
 			return [1, to];
 		}
+	}
+	// rewrite all
+	if (serverRoot) {
+		var to = serverRoot + url.replace(/^https?:\/\/[^\/]+|\?.*$/, '');
+		to = Path.resolve(to);
+		return [1, to];
 	}
 
 	return [0, url];
