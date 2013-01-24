@@ -61,7 +61,6 @@ function main() {
 		var url = request.url;
 		var before = CONFIG.before;
 		var map = CONFIG.map;
-		var after = CONFIG.after;
 		var merge = CONFIG.merge;
 
 		var me = {
@@ -83,16 +82,9 @@ function main() {
 
 		var serverRoot = /^https?:\/\//.test(url) ? '' : CONFIG.serverRoot;
 
-		var result = Util.rewrite(map, from, serverRoot);
+		var to = Util.rewrite(map, from, serverRoot);
 
-		var type = result[0];
-		var to = result[1];
-
-		if (after) {
-			to = after.call(me, to);
-		}
-
-		if (type == 1) {
+		if (to) {
 			console.log('[rewrite] ' + url + ' -> ' + to);
 
 			if (merge) {
@@ -109,7 +101,7 @@ function main() {
 			return;
 		}
 
-		var parsed = Url.parse(to);
+		var parsed = Url.parse(url);
 
 		var proxy = new HttpProxy.HttpProxy({
 			target : {
