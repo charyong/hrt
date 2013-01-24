@@ -19,10 +19,10 @@ function cssToLess(url) {
 function merge(path, callback) {
 	var root = this.config.serverRoot;
 
-	var dummyPath = path.split(Path.sep).join('/');
+	var newPath = path.split(Path.sep).join('/');
 
 	// CSS
-	if (/\.less$/.test(dummyPath)) {
+	if (/\.less$/.test(newPath)) {
 		var content = Util.readFileSync(path, 'utf-8');
 
 		var parser = new(Less.Parser)({
@@ -39,7 +39,7 @@ function merge(path, callback) {
 	}
 
 	// Global JS
-	if (/src\/js\/g\.js$/.test(dummyPath)) {
+	if (/src\/js\/g\.js$/.test(newPath)) {
 		var content = Util.readFileSync(path, 'utf-8');
 
 		var ozContent = Util.readFileSync(root + '/v3/src/js/lib/oz.js', 'utf-8');
@@ -57,6 +57,7 @@ function merge(path, callback) {
 // 合并TUI2文件
 function mergeTui2(path, callback) {
 	var root = this.config.serverRoot;
+	var subDir = /\.css$/.test(path) ? 'skin' : 'js';
 
 	var pathMap = {};
 
@@ -67,20 +68,16 @@ function mergeTui2(path, callback) {
 		while((match = regExp.exec(src))) {
 			var filePath = match[1];
 
-			if (filePath.indexOf('js/') !== 0) {
-				filePath = 'js/' + filePath;
+			if (!/^(js|skin)\//.test(filePath)) {
+				filePath = subDir + '/' + filePath;
 			}
 
 			var path = root + '/' + filePath;
 
 			if (typeof pathMap[filePath] == 'undefined') {
-				var fileStr;
+				var encoding = /\.tpl$/.test(filePath) ? 'utf8' : 'gbk';
 
-				if (/\.tpl$/.test(filePath)) {
-					fileStr = Util.readFileSync(path, 'utf8');
-				} else {
-					fileStr = Util.readFileSync(path, 'gbk');
-				}
+				var fileStr = Util.readFileSync(path, encoding);
 
 				if (/\.js$/.test(filePath)) {
 					grepPath(fileStr);
@@ -125,7 +122,7 @@ function mergeTui2(path, callback) {
 
 	dist = Iconv.toEncoding(dist, 'gbk');
 
-	callback('application/javascript', dist);
+	callback(/\.css$/.test(path) ? 'text/css' : 'application/javascript', dist);
 }
 
 exports.stripVersionInfo = stripVersionInfo;
