@@ -46,18 +46,15 @@ HRT 是前端代理工具，根据配置把指定的URL指向到本地文件。
 
 	返回本地文件内容时，修改文件内容。
 	```js
-	var Mime = require('mime');
-	var Util = require('../util');
-
 	exports.merge = function(path, callback) {
-		var contentType = Mime.lookup(path);
 		// 所有JS头部添加注释
 		if (/\.js$/.test(path)) {
 			var content = Util.readFileSync(path, 'utf-8');
-			return callback(contentType, '/* test /*\n' + content);
+			return callback(''application/javascript, '/* test /*\n' + content);
 		}
 		// 其它请求
-		var buffer = Util.readFileSync(path);
+		var contentType = require('mime').lookup(path);
+		var buffer = this.util.readFileSync(path);
 		return callback(contentType, buffer);
 	};
 	```
