@@ -50,7 +50,7 @@ HRT是前端代理工具，根据配置把指定的URL指向到本地文件。
 		// 所有JS头部添加注释
 		if (/\.js$/.test(path)) {
 			var content = Util.readFileSync(path, 'utf-8');
-			return callback(''application/javascript, '/* test /*\n' + content);
+			return callback('application/javascript', '/* test /*\n' + content);
 		}
 		// 其它请求
 		var contentType = require('mime').lookup(path);
