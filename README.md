@@ -63,7 +63,7 @@ HRT是前端代理工具，根据配置把指定的URL指向到本地文件。
 3. 在命令行输入 `hrt` ，启动HTTP服务。
 
 	```
-	hrt --config=./config/my.js
-	hrt --config=./config/my.js --port=8080
-	hrt --config=./config/my.js --debug=true
+	hrt config/my.js
+	hrt config/my.js --port=8080
+	hrt config/my.js --debug=true
 	```

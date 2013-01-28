@@ -12,11 +12,11 @@ var Util = require('./util');
 var Optimist = require('optimist');
 
 Optimist.usage([
-	'Usage: rewrite --config=[/path/to/config.js] --port=[number] --debug=[true/false]\n\n',
+	'Usage: hrt /path/to/config.js --port=[number] --debug=[true/false]\n\n',
 	'Examples:\n',
-	'rewrite --config=./config/my.js\n',
-	'rewrite --config=./config/my.js --port=8080\n',
-	'rewrite --config=./config/my.js --debug=true',
+	'hrt ./config/my.js\n',
+	'hrt ./config/my.js --port=8080\n',
+	'hrt ./config/my.js --debug=true',
 ].join(''));
 
 var ARGV = Optimist.argv;
@@ -33,7 +33,7 @@ if (ARGV.version || ARGV.v) {
 }
 
 var PORT = Util.undef(ARGV.port, 2222);
-var CONFIG_FILE = Util.undef(ARGV.config, __dirname + '/config/default.js');
+var CONFIG_FILE = ARGV._.length > 0 ? ARGV._[0] : __dirname + '/config/default.js';
 var DEBUG = Util.undef(ARGV.debug, false);
 
 CONFIG_FILE = Path.resolve(CONFIG_FILE);
