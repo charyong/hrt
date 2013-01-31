@@ -1,4 +1,3 @@
-
 var Path = require('path');
 var Util = require('../util');
 var Less = require('less');
@@ -110,7 +109,7 @@ function mergeTui2(path, callback) {
 			var varName = filePath.replace(/^js\/|\.tpl$/g, '');
 			varName = 'tpl_' + varName.replace(/\//g, '_');
 
-			fileStr = fileStr.replace(/(\r\n|\r|\n)/g, '').replace(/'/g, "\\'");
+			fileStr = fileStr.replace(/(\r\n|\r|\n)\s*/g, ' ').replace(/'/g, "\\'");
 
 			dist += 'var ' + varName + " = '" + fileStr + "';\n";
 		} else {
