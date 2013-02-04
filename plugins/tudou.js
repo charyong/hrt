@@ -37,15 +37,13 @@ function merge(path, callback) {
 		return;
 	}
 
-	// Global JS
-	if (/src\/js\/g\.js$/.test(newPath)) {
+	// Insert debug script
+	if (/src\/js\/lib\.js$/.test(newPath)) {
 		var content = Util.readFileSync(path, 'utf-8');
 
-		var ozContent = Util.readFileSync(root + '/v3/src/js/lib/oz.js', 'utf-8');
+		var debugContent = Util.readFileSync(root + '/v3/src/js/lib/debug.js', 'utf-8');
 
-		ozContent += Util.readFileSync(root + '/v3/src/js/lib/oz-debug.js', 'utf-8');
-
-		return callback('application/javascript', ozContent + content);
+		return callback('application/javascript', content + debugContent);
 	}
 
 	var contentType = Mime.lookup(path);
