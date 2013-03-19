@@ -77,7 +77,7 @@ function mergeTui2(path, callback) {
 
 				var fileStr = Util.readFileSync(path, encoding);
 
-				if (/\.js$/.test(filePath)) {
+				if (/\.(js|css)$/.test(filePath)) {
 					grepPath(fileStr);
 				}
 
