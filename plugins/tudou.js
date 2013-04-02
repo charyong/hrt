@@ -25,8 +25,10 @@ function merge(path, callback) {
 		var content = Util.readFileSync(path, 'utf-8');
 
 		var parser = new(Less.Parser)({
-			dumpLineNumbers : 'comments',
-			paths: ['.', root + '/v3/src/css']
+			env : 'development',
+			dumpLineNumbers : 'all',
+			paths : ['.', root + '/v3/src/css'],
+			filename : path,
 		});
 
 		parser.parse(content, function(error, tree) {
