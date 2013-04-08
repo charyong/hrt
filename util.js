@@ -68,7 +68,8 @@ function rewrite(map, url, serverRoot) {
 			var start = url.substr(0, index);
 			var end = url.substr(index + from.length);
 
-			if(/^https?:\/\/[^\/]+/.test(to)){ // 远程地址
+			if (/^https?:\/\//.test(to)) {
+				to = start + to + end;
 				return to;
 			}
 
