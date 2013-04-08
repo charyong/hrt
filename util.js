@@ -45,9 +45,7 @@ function loadPlugin(name) {
 	return require(__dirname + '/plugins/' + name + '.js');
 }
 
-// return value: "url" or undefined
-// undefined: no rewrite
-// "url": rewrite
+// return value: url or path
 function rewrite(map, url, serverRoot) {
 	// rewrite by map
 	for (var i = 0, len = map.length; i < len; i++) {
@@ -70,6 +68,11 @@ function rewrite(map, url, serverRoot) {
 			var start = url.substr(0, index);
 			var end = url.substr(index + from.length);
 
+			if (/https?:\/\//.test(to)) {
+				to = start + to + end;
+				return to;
+			}
+
 			end = end.replace(/\?.*$/, '');
 			to = Path.resolve(to + end);
 			return to;
@@ -81,6 +84,7 @@ function rewrite(map, url, serverRoot) {
 		to = Path.resolve(to);
 		return to;
 	}
+	return url;
 }
 
 exports.each = each;

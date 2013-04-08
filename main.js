@@ -84,7 +84,7 @@ function main() {
 
 		var to = Util.rewrite(map, from, serverRoot);
 
-		if (to) {
+		if (!/^https?:\/\//.test(to)) {
 			console.log('[rewrite] ' + url + ' -> ' + to);
 
 			if (merge) {
@@ -101,7 +101,7 @@ function main() {
 			return;
 		}
 
-		var parsed = Url.parse(url);
+		var parsed = Url.parse(to);
 
 		var proxy = new HttpProxy.HttpProxy({
 			target : {

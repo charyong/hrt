@@ -8,7 +8,7 @@ test('util.rewrite (empty map)', function(t) {
 
 	var url = 'http://js.tudouui.com/js/lib/tuilib2_10.js';
 	var result = util.rewrite(map, url);
-	t.type(result, 'undefined');
+	t.equal(result, 'http://js.tudouui.com/js/lib/tuilib2_10.js');
 
 	t.end();
 });
@@ -55,7 +55,37 @@ test('util.rewrite (to local file: partial URL)', function(t) {
 	// 4
 	var url = 'http://www.kindsoft.net/';
 	var result = util.rewrite(map, url);
-	t.type(result, 'undefined');
+	t.equal(result, 'http://www.kindsoft.net/');
+
+	t.end();
+});
+
+test('util.rewrite (to remote file: partial URL)', function(t) {
+	// 1
+	var map = [
+		['http://js.tudouui.com/js/lib', 'http://jstest.tudouui.com/js/lib'],
+	];
+	var url = 'http://js.tudouui.com/js/lib/tuilib2_10.js';
+	var result = util.rewrite(map, url);
+	t.equal(result, 'http://jstest.tudouui.com/js/lib/tuilib2_10.js');
+
+	// 2
+	var map = [
+		['http://js.tudouui.com/js/lib/tuilib2_10.js', 'http://jstest.tudouui.com/js/lib/tuilib2_10.js'],
+	];
+	var url = 'http://js.tudouui.com/js/lib/tuilib2_10.js';
+	var result = util.rewrite(map, url);
+	t.equal(result, 'http://jstest.tudouui.com/js/lib/tuilib2_10.js');
+
+	// 3
+	var url = 'http://js.tudouui.com/js/lib/tuilib2_10.js?t=20121118.css';
+	var result = util.rewrite(map, url);
+	t.equal(result, 'http://jstest.tudouui.com/js/lib/tuilib2_10.js?t=20121118.css');
+
+	// 4
+	var url = 'http://www.kindsoft.net/';
+	var result = util.rewrite(map, url);
+	t.equal(result, 'http://www.kindsoft.net/');
 
 	t.end();
 });
