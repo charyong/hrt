@@ -84,9 +84,7 @@ function main() {
 
 		var to = Util.rewrite(map, from, serverRoot);
 
-		if (to) {
-			console.log('[rewrite] ' + url + ' -> ' + to);
-
+		if (!/^https?:\/\//.test(to)) {
 			if (merge) {
 				merge.call(me, to, function(contentType, buffer) {
 					setResponse(response, contentType, buffer);
@@ -101,7 +99,11 @@ function main() {
 			return;
 		}
 
-		var parsed = Url.parse(url);
+		var parsed = Url.parse(to);
+
+		if(from !== to){
+			console.log('[rewrite] ' + url + ' -> ' + to);
+		}
 
 		var proxy = new HttpProxy.HttpProxy({
 			target : {
