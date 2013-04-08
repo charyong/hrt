@@ -84,26 +84,33 @@ function main() {
 
 		var to = Util.rewrite(map, from, serverRoot);
 
-		if (!/^https?:\/\//.test(to)) {
-			if (merge) {
-				merge.call(me, to, function(contentType, buffer) {
-					setResponse(response, contentType, buffer);
-				});
+		// rewrite
+		if(from !== to){
+			console.log('[rewrite] ' + url + ' -> ' + to);
+
+			// local file
+			if (!/^https?:\/\//.test(to)) {
+				if (merge) {
+					merge.call(me, to, function(contentType, buffer) {
+						setResponse(response, contentType, buffer);
+					});
+					return;
+				}
+
+				var contentType = Mime.lookup(to);
+				var buffer = Util.readFileSync(to);
+
+				setResponse(response, contentType, buffer);
 				return;
 			}
 
-			var contentType = Mime.lookup(to);
-			var buffer = Util.readFileSync(to);
-
-			setResponse(response, contentType, buffer);
+			// remote URL
+			request.pipe(Request(to)).pipe(response);
 			return;
 		}
 
-		var parsed = Url.parse(to);
-
-		if(from !== to){
-			console.log('[rewrite] ' + url + ' -> ' + to);
-		}
+		// no rewrite
+		var parsed = Url.parse(url);
 
 		var proxy = new HttpProxy.HttpProxy({
 			target : {
