@@ -80,33 +80,35 @@ function main() {
 			from = before.call(me, from);
 		}
 
-		var serverRoot = /^https?:\/\//.test(url) ? '' : CONFIG.serverRoot;
+		if (from) {
+			var serverRoot = /^https?:\/\//.test(url) ? '' : CONFIG.serverRoot;
 
-		var to = Util.rewrite(map, from, serverRoot);
+			var to = Util.rewrite(map, from, serverRoot);
 
-		// rewrite
-		if(from !== to){
-			Util.info('[rewrite] ' + url + ' -> ' + to);
+			// rewrite
+			if(from !== to){
+				Util.info('[rewrite] ' + url + ' -> ' + to);
 
-			// local file
-			if (!/^https?:\/\//.test(to)) {
-				if (merge) {
-					merge.call(me, to, function(contentType, buffer) {
-						setResponse(response, contentType, buffer);
-					});
+				// local file
+				if (!/^https?:\/\//.test(to)) {
+					if (merge) {
+						merge.call(me, to, function(contentType, buffer) {
+							setResponse(response, contentType, buffer);
+						});
+						return;
+					}
+
+					var contentType = Mime.lookup(to);
+					var buffer = Util.readFileSync(to);
+
+					setResponse(response, contentType, buffer);
 					return;
 				}
 
-				var contentType = Mime.lookup(to);
-				var buffer = Util.readFileSync(to);
-
-				setResponse(response, contentType, buffer);
+				// remote URL
+				request.pipe(Request(to)).pipe(response);
 				return;
 			}
-
-			// remote URL
-			request.pipe(Request(to)).pipe(response);
-			return;
 		}
 
 		// no rewrite
