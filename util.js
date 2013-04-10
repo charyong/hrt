@@ -24,15 +24,15 @@ function undef(val, defaultVal) {
 }
 
 function info(str) {
-	console.info('\033[36m', str, '"\033[0m');
+	console.info('\033[36m', str, '\033[0m');
 }
 
 function warn(str) {
-	console.warn('\033[33m', str, '"\033[0m');
+	console.warn('\033[33m', str, '\033[0m');
 }
 
 function error(str) {
-	console.error('\033[31m', str, '"\033[0m');
+	console.error('\033[31m', str, '\033[0m');
 }
 
 function readFileSync(filePath, encoding) {
