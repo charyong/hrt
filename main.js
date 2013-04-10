@@ -86,7 +86,7 @@ function main() {
 
 		// rewrite
 		if(from !== to){
-			console.log('[rewrite] ' + url + ' -> ' + to);
+			Util.info('[rewrite] ' + url + ' -> ' + to);
 
 			// local file
 			if (!/^https?:\/\//.test(to)) {

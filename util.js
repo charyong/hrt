@@ -23,13 +23,25 @@ function undef(val, defaultVal) {
 	return typeof val === 'undefined' ? defaultVal : val;
 }
 
+function info(str) {
+	console.info('\033[36m', str, '"\033[0m');
+}
+
+function warn(str) {
+	console.warn('\033[33m', str, '"\033[0m');
+}
+
+function error(str) {
+	console.error('\033[31m', str, '"\033[0m');
+}
+
 function readFileSync(filePath, encoding) {
 	var buffer = new Buffer('');
 
 	try {
 		buffer = Fs.readFileSync(filePath);
 	} catch (e) {
-		console.error(e.toString());
+		error(e.toString());
 	}
 
 	if (!encoding) {
@@ -90,6 +102,9 @@ function rewrite(map, url, serverRoot) {
 exports.each = each;
 exports.isRegExp = isRegExp;
 exports.undef = undef;
+exports.info = info;
+exports.warn = warn;
+exports.error = error;
 exports.loadPlugin = loadPlugin;
 exports.readFileSync = readFileSync;
 exports.rewrite = rewrite;
