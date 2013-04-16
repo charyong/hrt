@@ -16,7 +16,7 @@ function cssToLess(url) {
 
 // 合并本地文件
 function merge(path, callback) {
-	var root = this.config.serverRoot;
+	var root = path.replace(/^(.*?)[\\\/](src|build|dist)[\\\/].*$/, '$1');
 
 	var newPath = path.split(Path.sep).join('/');
 
@@ -27,7 +27,7 @@ function merge(path, callback) {
 		var parser = new(Less.Parser)({
 			env : 'development',
 			dumpLineNumbers : 'all',
-			paths : ['.', root + '/v3/src/css'],
+			paths : ['.', root + '/src/css'],
 			filename : path,
 		});
 
@@ -44,7 +44,7 @@ function merge(path, callback) {
 	if (/src\/js\/lib\.js$/.test(newPath)) {
 		var content = Util.readFileSync(path, 'utf-8');
 
-		var debugContent = Util.readFileSync(root + '/v3/src/js/lib/debug.js', 'utf-8');
+		var debugContent = Util.readFileSync(root + '/src/js/lib/debug.js', 'utf-8');
 
 		return callback('application/javascript', content + debugContent);
 	}
