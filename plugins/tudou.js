@@ -41,7 +41,7 @@ function merge(path, callback) {
 	}
 
 	// Insert debug script
-	if (/src\/js\/lib\.js$/.test(newPath)) {
+	if (/src\/js\/(lib|lite|loader)\.js$/.test(newPath)) {
 		var content = Util.readFileSync(path, 'utf-8');
 
 		var debugContent = Util.readFileSync(root + '/src/js/lib/debug.js', 'utf-8');
