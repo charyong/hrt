@@ -1,6 +1,6 @@
 {
 	"name": "hrt",
-	"version": "1.0.7",
+	"version": "1.0.8",
 	"description": "HTTP Rewrite Tool for Frontend",
 	"author": "Longhao Luo <lhluo@tudou.com>",
 	"license": "GPL",
@@ -22,6 +22,7 @@
 		"optimist": "~0.3.5",
 		"iconv-lite": "~0.2.5",
 		"request": "~2.12.0",
+		"watchr": "~2.4.3",
 		"less": "~1.4.0-b2"
 	},
 	"devDependencies": {

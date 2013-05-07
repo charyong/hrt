@@ -5,6 +5,7 @@ var Fs = require('fs');
 var Url = require('url');
 var Mime = require('mime');
 var Request = require('request');
+var Watchr = require('watchr');
 
 var HttpProxy = require('./http-proxy');
 var Util = require('./util');
@@ -48,10 +49,17 @@ function setResponse(response, contentType, buffer) {
 
 function main() {
 	// reload config
-	Fs.watch(CONFIG_FILE, function(event, filename) {
-		if(event == 'change') {
-			delete require.cache[CONFIG_FILE];
-			CONFIG = require(CONFIG_FILE);
+	Watchr.watch({
+		paths: [CONFIG_FILE],
+		listeners: {
+			error: function(err) {
+				Util.error('[watch] ', err);
+			},
+			change: function() {
+				delete require.cache[CONFIG_FILE];
+				CONFIG = require(CONFIG_FILE);
+				Util.info('[watch] reload config: ' + CONFIG_FILE);
+			}
 		}
 	});
 
