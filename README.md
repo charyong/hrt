@@ -23,17 +23,15 @@ HRT是前端代理工具，根据配置把指定的URL指向到本地文件。
 
 	指定单个文件。
 	```js
-	var root = 'D:\\Projects\\static-trunk';
 	exports.map = [
-		['http://js.tudouui.com/js/lib/tuilib2.js', root + '/js/lib/tuilib2_combo.js']
+		['http://js.tudouui.com/js/lib/tuilib2.js', 'D:\\Projects\\static-trunk\\js\\lib\\tuilib2_combo.js']
 	];
 	```
 
 	把整个目录指向到本地。
 	```js
-	var root = 'D:\\Projects\\static-trunk';
 	exports.map = [
-		['http://js.tudouui.com/js/lib', root + '/js/lib']
+		['http://js.tudouui.com/js/lib', 'D:\\Projects\\static-trunk\\js']
 	];
 	```
 
