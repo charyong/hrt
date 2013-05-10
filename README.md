@@ -3,7 +3,7 @@ HTTP Rewrite Tool
 
 HRT是前端代理工具，根据配置把指定的URL指向到本地文件或远程URL。
 
-## 安装
+### 安装
 
 1. 源代码安装
 	```
@@ -15,7 +15,7 @@ HRT是前端代理工具，根据配置把指定的URL指向到本地文件或�
 	npm install hrt -g
 	```
 
-## 使用方法
+### 使用方法
 
 1. 修改浏览器代理设置，IP：`127.0.0.1`，端口：`2222`，推荐用SwitchySharp（Chrome插件）、FoxyProxy（Firefox插件）切换代理。
 
@@ -44,7 +44,7 @@ HRT是前端代理工具，根据配置把指定的URL指向到本地文件或�
 	hrt my-hrt-config.js --debug=true
 	```
 
-## 高级用法
+### 高级用法
 
 1. 移除版本号。
 	```js
