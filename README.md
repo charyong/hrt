@@ -37,7 +37,7 @@ HRT是前端代理工具，根据配置把指定的URL指向到本地文件或�
 
 3. 在命令行输入 `hrt my-hrt-config.js` ，启动HTTP服务。
 
-	```
+	```bash
 	# 修改端口
 	hrt my-hrt-config.js --port=8080
 	# 输出调试信息
