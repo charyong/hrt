@@ -5,15 +5,9 @@ HRT是前端代理工具，根据配置把指定的URL指向到本地文件或�
 
 ### 安装
 
-1. 源代码安装
-	```
-	git clone git://github.com/tudouui/hrt.git
-	```
-
-2. NPM安装
-	```
-	npm install hrt -g
-	```
+```
+npm install hrt -g
+```
 
 ### 使用方法
 
@@ -68,3 +62,19 @@ HRT是前端代理工具，根据配置把指定的URL指向到本地文件或�
 	};
 	```
 	注：当配置文件里有 `exports.merge` 时会接管所有请求，所以在程序逻辑里需要加入文件类型判断。
+
+3. 修改URL内容。
+	```js
+	exports.merge = function(path, callback) {
+		if (/^http:\/\/(www|wwwtest|beta)\.tudou\.com\/programs\/view\//.test(this.req.url)) {
+			this.util.get(this.req.url, 'gbk', function(body) {
+				callback('text/html', body + '<!-- test -->', 'gbk');
+			});
+			return;
+		}
+		// 其它请求
+		var contentType = require('mime').lookup(path);
+		var buffer = this.util.readFileSync(path);
+		return callback(contentType, buffer);
+	};
+	```
