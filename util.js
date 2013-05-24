@@ -2,6 +2,7 @@
 var Path = require('path');
 var Fs = require('fs');
 var Iconv = require('iconv-lite');
+var Request = require('request');
 
 function each(obj, fn) {
 	for (var key in obj) {
@@ -51,6 +52,17 @@ function readFileSync(filePath, encoding) {
 	var fileStr = Iconv.fromEncoding(buffer, encoding);
 
 	return fileStr;
+}
+
+function get(url, callback) {
+	Request({
+		url : url,
+		encoding : null
+	}, function (error, response, body) {
+		if (!error && response.statusCode == 200) {
+			callback(body);
+		}
+	});
 }
 
 function loadPlugin(name) {
@@ -107,4 +119,5 @@ exports.warn = warn;
 exports.error = error;
 exports.loadPlugin = loadPlugin;
 exports.readFileSync = readFileSync;
+exports.get = get;
 exports.rewrite = rewrite;
