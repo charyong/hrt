@@ -88,25 +88,21 @@ function rewrite(map, url, serverRoot) {
 
 		var index = url.indexOf(from);
 
-		if (index >= 0) {
-			var start = url.substr(0, index);
-			var end = url.substr(index + from.length);
+		if (index === 0) {
+			var suffix = url.substr(index + from.length);
 
 			if (/^https?:\/\//.test(to)) {
-				to = start + to + end;
-				return to;
+				return to + suffix;
 			}
 
-			end = end.replace(/\?.*$/, '');
-			to = Path.resolve(to + end);
-			return to;
+			suffix = suffix.replace(/\?.*$/, '');
+			return Path.resolve(to + suffix);
 		}
 	}
 	// rewrite all
 	if (serverRoot) {
 		var to = serverRoot + url.replace(/^https?:\/\/[^\/]+|\?.*$/, '');
-		to = Path.resolve(to);
-		return to;
+		return Path.resolve(to);
 	}
 	return url;
 }
