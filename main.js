@@ -2,6 +2,7 @@
 var Http = require('http');
 var Path = require('path');
 var Fs = require('fs');
+var Iconv = require('iconv-lite');
 var Url = require('url');
 var Mime = require('mime');
 var Request = require('request');
@@ -100,7 +101,10 @@ function main() {
 				// local file
 				if (!/^https?:\/\//.test(to)) {
 					if (merge) {
-						merge.call(me, to, function(contentType, buffer) {
+						merge.call(me, to, function(contentType, buffer, encoding) {
+							if (typeof buffer == 'string' && encoding) {
+								buffer = Iconv.toEncoding(buffer, encoding);
+							}
 							setResponse(response, contentType, buffer);
 						});
 						return;

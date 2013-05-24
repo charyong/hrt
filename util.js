@@ -54,13 +54,16 @@ function readFileSync(filePath, encoding) {
 	return fileStr;
 }
 
-function get(url, callback) {
+function get(url, encoding, callback) {
 	Request({
 		url : url,
 		encoding : null
-	}, function (error, response, body) {
+	}, function (error, response, buffer) {
 		if (!error && response.statusCode == 200) {
-			callback(body);
+			if (encoding) {
+				buffer = Iconv.fromEncoding(buffer, encoding);
+			}
+			callback(buffer);
 		}
 	});
 }
