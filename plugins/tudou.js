@@ -6,7 +6,7 @@ var Iconv = require('iconv-lite');
 
 // URL移除版本号
 function stripVersionInfo(url) {
-	return url.replace(/([^?]+)_\d+(\.(?:js|css|swf))/i, '$1$2');
+	return url.replace(/([^?]+)_\d+(\.(?:js|css|swf|png|jpg|gif))/i, '$1$2');
 }
 
 // CSS扩展名改成LESS
