@@ -44,6 +44,7 @@ var CONFIG = require(CONFIG_FILE);
 
 function setResponse(response, contentType, buffer) {
 	response.setHeader('Content-Type', contentType);
+	response.setHeader('Access-Control-Allow-Origin', '*');
 	response.write(buffer);
 	response.end();
 }
