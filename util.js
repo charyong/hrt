@@ -98,7 +98,7 @@ function rewrite(map, url, serverRoot) {
 				return to + suffix;
 			}
 
-			suffix = suffix.replace(/\?.*$/, '');
+			suffix = suffix.replace(/[?#].*$/, '');
 			return Path.resolve(to + suffix);
 		}
 	}
