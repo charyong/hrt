@@ -94,15 +94,17 @@ function merge(path, callback) {
 		return;
 	}
 
-	if (/src\/js\/(lib|lite|loader)\.js$/.test(newPath)) {
+	// if (/src\/js\/(lib|lite|loader)\.js$/.test(newPath)) {
 
-		var str = Util.readFileSync(path, 'utf-8');
+	// 	var str = Util.readFileSync(path, 'utf-8');
 
-		var debugStr = Util.readFileSync(root + '/src/js/lib/debug.js', 'utf-8');
+	// 	var debugStr = Util.readFileSync(root + '/src/js/lib/debug.js', 'utf-8');
 
-		return callback('application/javascript', str + debugStr);
+	// 	return callback('application/javascript', str + debugStr);
 
-	} else if (/src\/js\/.+\.js$/.test(newPath)) {
+	// }
+
+	if (/src\/js\/.+\.js$/.test(newPath)) {
 
 		var str = Util.readFileSync(path, 'utf-8');
 
