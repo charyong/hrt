@@ -1,8 +1,11 @@
+var Fs = require('fs');
 var Path = require('path');
 var Util = require('../util');
 var Less = require('less');
 var Mime = require('mime');
 var Iconv = require('iconv-lite');
+
+var RE_AUTOFIXNAME = /define\((?=[^'"])/;
 
 // URL移除版本号
 function stripVersionInfo(url) {
@@ -14,15 +17,66 @@ function cssToLess(url) {
 	return url.replace(/\.css$/, '.less');
 }
 
+// 支持相对路径，补充模块ID，模板转换等
+function fixModule(root, path, pathname, data) {
+	if(/\bdefine\s*\(/.test(data) && !/\bdefine\s*\(\s*['"]/.test(data)) {
+		data = data.replace(/\b(define\s*\(\s*)/, '$1\'' + pathname.slice(11).replace(/\.js$/, '') + '\', ').replace(/^\//, '');
+	}
+	data = data.replace(/\brequire\s*\(\s*[['"].+,\s*function\s*\(/g, function() {
+		var s = arguments[0];
+		s = s.replace(/(['"])(.+?)\1/g, function() {
+			var f = arguments[2];
+			if(f.charAt(0) == '.') {
+				f = pathname.slice(11).replace(/[\w-]+\.js$/, '').replace(/^\//, '') + f;
+				f = f.replace(/\w+\/\.\.\//g, '').replace(/\.\//g, '');
+			}
+			else if(f.charAt(0) == '/') {
+				f = f.slice(1);
+			}
+			return arguments[1] + f + arguments[1];
+		});
+		return s;
+	});
+
+	data = data.replace(/\brequire\s*\.\s*text\s*\(\s*(['"])([\w-./]+)\1\s*\)/g, function() {
+		var f = arguments[2];
+		if(/^[a-z_/]/i.test(f)) {
+			f = root + '/src/js/' + f;
+		}
+		else {
+			f = path.replace(/[\w-]+\.js$/, '') + f;
+			f = f.replace(/\w+\/\.\.\//g, '').replace(/\.\//g, '');
+		}
+		var s = '';
+		try {
+			s = Fs.readFileSync(f, {
+				encoding: 'utf-8'
+			});
+
+		} catch(e) {
+			console.error(e);
+			s = e.toString();
+		}
+		s = s.replace(/^\uFEFF/, '');
+		s = s.replace(/(\r\n|\r|\n)\s*/g, ' ');
+		s = s.replace(/\\/g, '\\\\');
+		s = s.replace(/'/g, "\\'");
+		return "'" + s + "'";
+	});
+
+	return data;
+}
+
 // 合并本地文件
 function merge(path, callback) {
 	var root = path.replace(/^(.*?)[\\\/](src|build|dist)[\\\/].*$/, '$1');
+	var pathname = this.req.url.replace(/^https?:\/\/[^\/]+/, '');
 
 	var newPath = path.split(Path.sep).join('/');
 
 	// CSS
 	if (/\.less$/.test(newPath)) {
-		var content = Util.readFileSync(path, 'utf-8');
+		var str = Util.readFileSync(path, 'utf-8');
 
 		var parser = new(Less.Parser)({
 			env : 'development',
@@ -31,7 +85,7 @@ function merge(path, callback) {
 			filename : path,
 		});
 
-		parser.parse(content, function(error, tree) {
+		parser.parse(str, function(error, tree) {
 			if (error) {
 				return console.error(error);
 			}
@@ -40,13 +94,21 @@ function merge(path, callback) {
 		return;
 	}
 
-	// Insert debug script
 	if (/src\/js\/(lib|lite|loader)\.js$/.test(newPath)) {
-		var content = Util.readFileSync(path, 'utf-8');
 
-		var debugContent = Util.readFileSync(root + '/src/js/lib/debug.js', 'utf-8');
+		var str = Util.readFileSync(path, 'utf-8');
 
-		return callback('application/javascript', content + debugContent);
+		var debugStr = Util.readFileSync(root + '/src/js/lib/debug.js', 'utf-8');
+
+		return callback('application/javascript', str + debugStr);
+
+	} else if (/src\/js\/.+\.js$/.test(newPath)) {
+
+		var str = Util.readFileSync(path, 'utf-8');
+
+		str = fixModule(root, path, pathname, str);
+
+		return callback('application/javascript', str);
 	}
 
 	var contentType = Mime.lookup(path);
