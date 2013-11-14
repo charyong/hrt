@@ -18,16 +18,19 @@ function cssToLess(url) {
 }
 
 // 支持相对路径，补充模块ID，模板转换等
-function fixModule(root, path, pathname, data) {
-	if(/\bdefine\s*\(/.test(data) && !/\bdefine\s*\(\s*['"]/.test(data)) {
-		data = data.replace(/\b(define\s*\(\s*)/, '$1\'' + pathname.slice(11).replace(/\.js$/, '') + '\', ').replace(/^\//, '');
+function fixModule(path, str) {
+	var root = path.replace(/^(.*?)[\\\/](src|build|dist)[\\\/].*$/, '$1');
+	var jsPath = path.split(Path.sep).join('/').replace(/^.+\/src\/js\//, '');
+
+	if(/\bdefine\s*\(/.test(str) && !/\bdefine\s*\(\s*['"]/.test(str)) {
+		str = str.replace(/\b(define\s*\(\s*)/, '$1\'' + jsPath.replace(/\.js$/, '') + '\', ');
 	}
-	data = data.replace(/\brequire\s*\(\s*[['"].+,\s*function\s*\(/g, function() {
+	str = str.replace(/\brequire\s*\(\s*[['"].+,\s*function\s*\(/g, function() {
 		var s = arguments[0];
 		s = s.replace(/(['"])(.+?)\1/g, function() {
 			var f = arguments[2];
 			if(f.charAt(0) == '.') {
-				f = pathname.slice(11).replace(/[\w-]+\.js$/, '').replace(/^\//, '') + f;
+				f = jsPath.replace(/[\w-]+\.js$/, '') + f;
 				f = f.replace(/\w+\/\.\.\//g, '').replace(/\.\//g, '');
 			}
 			else if(f.charAt(0) == '/') {
@@ -38,7 +41,7 @@ function fixModule(root, path, pathname, data) {
 		return s;
 	});
 
-	data = data.replace(/\brequire\s*\.\s*text\s*\(\s*(['"])([\w-./]+)\1\s*\)/g, function() {
+	str = str.replace(/\brequire\s*\.\s*text\s*\(\s*(['"])([\w-./]+)\1\s*\)/g, function() {
 		var f = arguments[2];
 		if(/^[a-z_/]/i.test(f)) {
 			f = root + '/src/js/' + f;
@@ -64,13 +67,12 @@ function fixModule(root, path, pathname, data) {
 		return "'" + s + "'";
 	});
 
-	return data;
+	return str;
 }
 
 // 合并本地文件
 function merge(path, callback) {
 	var root = path.replace(/^(.*?)[\\\/](src|build|dist)[\\\/].*$/, '$1');
-	var pathname = this.req.url.replace(/^https?:\/\/[^\/]+/, '');
 
 	var newPath = path.split(Path.sep).join('/');
 
@@ -108,7 +110,7 @@ function merge(path, callback) {
 
 		var str = Util.readFileSync(path, 'utf-8');
 
-		str = fixModule(root, path, pathname, str);
+		str = fixModule(path, str);
 
 		return callback('application/javascript', str);
 	}
