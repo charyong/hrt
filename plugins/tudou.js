@@ -17,32 +17,55 @@ function cssToLess(url) {
 	return url.replace(/\.css$/, '.less');
 }
 
-// 支持相对路径，补充模块ID，模板转换等
+// 将JS代码改成AMD模块，包含路径转换，补充模块ID，模板转换等
 function fixModule(path, str) {
 	var root = path.replace(/^(.*?)[\\\/](src|build|dist)[\\\/].*$/, '$1');
-	var jsPath = path.split(Path.sep).join('/').replace(/^.+\/src\/js\//, '');
+	var relativePath = path.split(Path.sep).join('/').replace(/^.+\/src\/js\//, '');
+	var mid = relativePath.replace(/\.js$/, '');
 
-	if(/\bdefine\s*\(/.test(str) && !/\bdefine\s*\(\s*['"]/.test(str)) {
-		str = str.replace(/\b(define\s*\(\s*)/, '$1\'' + jsPath.replace(/\.js$/, '') + '\', ');
-	}
-	str = str.replace(/\brequire\s*\(\s*[['"].+,\s*function\s*\(/g, function() {
-		var s = arguments[0];
-		s = s.replace(/(['"])(.+?)\1/g, function() {
-			var f = arguments[2];
+	function fixDep(s, format) {
+		if (format) {
+			s = s.replace(/\s/g, '');
+		}
+		return s.replace(/(['"])(.+?)\1(,?)/g, function($0, $1, $2, $3) {
+			var f = $2;
 			if(f.charAt(0) == '.') {
-				f = jsPath.replace(/[\w-]+\.js$/, '') + f;
+				f = relativePath.replace(/[\w-]+\.js$/, '') + f;
 				f = f.replace(/\w+\/\.\.\//g, '').replace(/\.\//g, '');
 			}
 			else if(f.charAt(0) == '/') {
 				f = f.slice(1);
 			}
-			return arguments[1] + f + arguments[1];
-		});
-		return s;
-	});
+			if (format) {
+				return '\n  "' + f + '"' + $3 + '\n';
+			} else {
+				return $1 + f + $1 + $3;
+			}
+		}).replace(/,\n\n/g, ',\n');
+	}
 
-	str = str.replace(/\brequire\s*\.\s*text\s*\(\s*(['"])([\w-./]+)\1\s*\)/g, function() {
-		var f = arguments[2];
+	// 补充模块ID
+	if(/(?:^|[^\w\.])define\s*\(/.test(str) && !/(?:^|[^\w\.])define\s*\(\s*['"]/.test(str)) {
+		str = str.replace(/\b(define\s*\(\s*)/, '$1"' + mid + '", ');
+	}
+
+	// 补齐依赖
+	str = str.replace(/((?:^|[^\w\.])define\s*\(\s*['"].*?['"]\s*,\s*)([['"][\s\S]+?)(,\s*function\s*\()/g, function($0, $1, $2, $3) {
+		return $1 + fixDep($2, true) + $3;
+	});
+	str = str.replace(/((?:^|[^\w\.])require\s*\(\s*)([\['"][\s\S]+?)(,\s*function\s*\()/g, function($0, $1, $2, $3) {
+		return $1 + fixDep($2, false) + $3;
+	});
+	str = str.replace(/((?:^|[^\w\.])define\s*\(\s*['"].*?['"]\s*)(,\s*function\s*\()/g, '$1,[]$2');
+
+	// 非AMD模块
+	if(!/(?:^|[^\w\.])(define|require)\s*\(/.test(str)) {
+		return str += '\n/* autogeneration */\ndefine("' + mid + '", [], function(){});\n';
+	}
+
+	// JS模板转换
+	str = str.replace(/(\b)require\.text\(\s*(['"])(.+?)\2\s*\)/g, function($0, $1, $2, $3) {
+		var f = $3;
 		if(/^[a-z_/]/i.test(f)) {
 			f = root + '/src/js/' + f;
 		}
@@ -64,7 +87,7 @@ function fixModule(path, str) {
 		s = s.replace(/(\r\n|\r|\n)\s*/g, ' ');
 		s = s.replace(/\\/g, '\\\\');
 		s = s.replace(/'/g, "\\'");
-		return "'" + s + "'";
+		return $1 + "'" + s + "'";
 	});
 
 	return str;
@@ -96,22 +119,16 @@ function merge(path, callback) {
 		return;
 	}
 
-	// if (/src\/js\/(lib|lite|loader)\.js$/.test(newPath)) {
+	if (/src\/js\/(lib|lite|loader)\.js$/.test(newPath)) {
 
-	// 	var str = Util.readFileSync(path, 'utf-8');
+		// var str = Util.readFileSync(path, 'utf-8');
+		// var debugStr = Util.readFileSync(root + '/src/js/lib/debug.js', 'utf-8');
+		// return callback('application/javascript', str + debugStr);
 
-	// 	var debugStr = Util.readFileSync(root + '/src/js/lib/debug.js', 'utf-8');
-
-	// 	return callback('application/javascript', str + debugStr);
-
-	// }
-
-	if (/src\/js\/.+\.js$/.test(newPath)) {
+	} else if (/src\/js\/.+\.js$/.test(newPath)) {
 
 		var str = Util.readFileSync(path, 'utf-8');
-
 		str = fixModule(path, str);
-
 		return callback('application/javascript', str);
 	}
 
