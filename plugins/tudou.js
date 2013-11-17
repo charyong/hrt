@@ -60,7 +60,7 @@ function fixModule(path, str) {
 
 	// 非AMD模块
 	if(!/(?:^|[^\w\.])(define|require)\s*\(/.test(str)) {
-		return str += '\n/* autogeneration */\ndefine("' + mid + '", [], function(){});\n';
+		return str += '\n/* autogeneration */\n"define" in this && define("' + mid + '", [], function(){});\n';
 	}
 
 	// JS模板转换
