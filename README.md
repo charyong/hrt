@@ -1,50 +1,53 @@
 HTTP Rewrite Tool
 =================================================
 
-HRT是前端代理工具，根据配置把指定的URL指向到本地文件。
+HRT是前端代理工具，根据配置把指定的URL指向到本地文件或远程URL。
 
-## 安装
+### 安装
 
-1. 源代码安装
-	```
-	git clone git://github.com/tudouui/hrt.git
-	```
+```
+npm install hrt -g
+```
 
-2. NPM安装
-	```
-	npm install hrt -g
-	```
+### 使用方法
 
-## 使用方法
+1. 修改浏览器代理设置，IP：`127.0.0.1`，端口：`2222`，推荐用SwitchySharp（Chrome插件）、FoxyProxy（Firefox插件）切换代理。
 
-1. 修改浏览器代理设置，IP： `127.0.0.1` ，端口： `2222` 。
+2. 创建配置文件 `my-hrt-config.js` ，添加跳转规则。
 
-2. 创建配置文件 `./config/my.js` ，添加跳转规则。
-
-	指定单个文件。
+	代理文件：
 	```js
-	var root = 'D:\\Projects\\static-trunk';
 	exports.map = [
-		['http://js.tudouui.com/js/lib/tuilib2.js', root + '/js/lib/tuilib2_combo.js']
+		['http://js.tudouui.com/v3/dist/js/g.js', 'D:\\project\\static\\trunk\\v3\\src\\js\\g.js']
 	];
 	```
 
-	把整个目录指向到本地。
+	代理目录：
 	```js
-	var root = 'D:\\Projects\\static-trunk';
 	exports.map = [
-		['http://js.tudouui.com/js/lib', root + '/js/lib']
+		['http://js.tudouui.com/v3/dist/js', 'D:\\project\\static\\trunk\\v3\\src\\js']
 	];
 	```
 
-	移除版本号。
+3. 在命令行输入 `hrt my-hrt-config.js` ，启动HTTP服务。
+
+	```bash
+	# 修改端口
+	hrt my-hrt-config.js --port=8080
+	# 输出调试信息
+	hrt my-hrt-config.js --debug=true
+	```
+
+### 高级用法
+
+1. 移除版本号。
 	```js
 	exports.before = function(url) {
 		return url.replace(/([^?]+)_\d+(\.(?:js|css))/, '$1$2');
 	};
 	```
 
-	返回本地文件内容时，修改文件内容。
+2. 修改文件内容。
 	```js
 	exports.merge = function(path, callback) {
 		// 所有JS头部添加注释
@@ -60,10 +63,18 @@ HRT是前端代理工具，根据配置把指定的URL指向到本地文件。
 	```
 	注：当配置文件里有 `exports.merge` 时会接管所有请求，所以在程序逻辑里需要加入文件类型判断。
 
-3. 在命令行输入 `hrt` ，启动HTTP服务。
-
-	```
-	hrt config/my.js
-	hrt config/my.js --port=8080
-	hrt config/my.js --debug=true
+3. 修改URL内容。
+	```js
+	exports.merge = function(path, callback) {
+		if (/^http:\/\/(www|wwwtest|beta)\.tudou\.com\/programs\/view\//.test(this.req.url)) {
+			this.util.get(this.req.url, 'gbk', function(body) {
+				callback('text/html', body + '<!-- test -->', 'gbk');
+			});
+			return;
+		}
+		// 其它请求
+		var contentType = require('mime').lookup(path);
+		var buffer = this.util.readFileSync(path);
+		return callback(contentType, buffer);
+	};
 	```

@@ -2,6 +2,7 @@
 var Path = require('path');
 var Fs = require('fs');
 var Iconv = require('iconv-lite');
+var Request = require('request');
 
 function each(obj, fn) {
 	for (var key in obj) {
@@ -53,6 +54,20 @@ function readFileSync(filePath, encoding) {
 	return fileStr;
 }
 
+function get(url, encoding, callback) {
+	Request({
+		url : url,
+		encoding : null
+	}, function (error, response, buffer) {
+		if (!error && response.statusCode == 200) {
+			if (encoding) {
+				buffer = Iconv.fromEncoding(buffer, encoding);
+			}
+			callback(buffer);
+		}
+	});
+}
+
 function loadPlugin(name) {
 	return require(__dirname + '/plugins/' + name + '.js');
 }
@@ -76,25 +91,21 @@ function rewrite(map, url, serverRoot) {
 
 		var index = url.indexOf(from);
 
-		if (index >= 0) {
-			var start = url.substr(0, index);
-			var end = url.substr(index + from.length);
+		if (index === 0) {
+			var suffix = url.substr(index + from.length);
 
 			if (/^https?:\/\//.test(to)) {
-				to = start + to + end;
-				return to;
+				return to + suffix;
 			}
 
-			end = end.replace(/\?.*$/, '');
-			to = Path.resolve(to + end);
-			return to;
+			suffix = suffix.replace(/[?#].*$/, '');
+			return Path.resolve(to + suffix);
 		}
 	}
 	// rewrite all
 	if (serverRoot) {
 		var to = serverRoot + url.replace(/^https?:\/\/[^\/]+|\?.*$/, '');
-		to = Path.resolve(to);
-		return to;
+		return Path.resolve(to);
 	}
 	return url;
 }
@@ -107,4 +118,5 @@ exports.warn = warn;
 exports.error = error;
 exports.loadPlugin = loadPlugin;
 exports.readFileSync = readFileSync;
+exports.get = get;
 exports.rewrite = rewrite;

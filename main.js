@@ -2,9 +2,11 @@
 var Http = require('http');
 var Path = require('path');
 var Fs = require('fs');
+var Iconv = require('iconv-lite');
 var Url = require('url');
 var Mime = require('mime');
 var Request = require('request');
+var Watchr = require('watchr');
 
 var HttpProxy = require('./http-proxy');
 var Util = require('./util');
@@ -42,16 +44,24 @@ var CONFIG = require(CONFIG_FILE);
 
 function setResponse(response, contentType, buffer) {
 	response.setHeader('Content-Type', contentType);
+	response.setHeader('Access-Control-Allow-Origin', '*');
 	response.write(buffer);
 	response.end();
 }
 
 function main() {
 	// reload config
-	Fs.watch(CONFIG_FILE, function(event, filename) {
-		if(event == 'change') {
-			delete require.cache[CONFIG_FILE];
-			CONFIG = require(CONFIG_FILE);
+	Watchr.watch({
+		paths: [CONFIG_FILE],
+		listeners: {
+			error: function(err) {
+				Util.error('[watch] ', err);
+			},
+			change: function() {
+				delete require.cache[CONFIG_FILE];
+				CONFIG = require(CONFIG_FILE);
+				Util.info('[watch] reload config: ' + CONFIG_FILE);
+			}
 		}
 	});
 
@@ -80,33 +90,38 @@ function main() {
 			from = before.call(me, from);
 		}
 
-		var serverRoot = /^https?:\/\//.test(url) ? '' : CONFIG.serverRoot;
+		if (from) {
+			var serverRoot = /^https?:\/\//.test(url) ? '' : CONFIG.serverRoot;
 
-		var to = Util.rewrite(map, from, serverRoot);
+			var to = Util.rewrite(map, from, serverRoot);
 
-		// rewrite
-		if(from !== to){
-			Util.info('[rewrite] ' + url + ' -> ' + to);
+			// rewrite
+			if(from !== to){
+				Util.info('[rewrite] ' + url + ' -> ' + to);
 
-			// local file
-			if (!/^https?:\/\//.test(to)) {
-				if (merge) {
-					merge.call(me, to, function(contentType, buffer) {
-						setResponse(response, contentType, buffer);
-					});
+				// local file
+				if (!/^https?:\/\//.test(to)) {
+					if (merge) {
+						merge.call(me, to, function(contentType, buffer, encoding) {
+							if (typeof buffer == 'string' && encoding) {
+								buffer = Iconv.toEncoding(buffer, encoding);
+							}
+							setResponse(response, contentType, buffer);
+						});
+						return;
+					}
+
+					var contentType = Mime.lookup(to);
+					var buffer = Util.readFileSync(to);
+
+					setResponse(response, contentType, buffer);
 					return;
 				}
 
-				var contentType = Mime.lookup(to);
-				var buffer = Util.readFileSync(to);
-
-				setResponse(response, contentType, buffer);
+				// remote URL
+				request.pipe(Request(to)).pipe(response);
 				return;
 			}
-
-			// remote URL
-			request.pipe(Request(to)).pipe(response);
-			return;
 		}
 
 		// no rewrite
