@@ -26,7 +26,6 @@ function fixModule(path, str) {
 	function resolveUrl(url) {
 		while(true) {
 			url = url.replace(/\w+\/\.\.\//g, '');
-			console.log(url)
 			if (!/\.\.\//.test(url)) {
 				break;
 			}
