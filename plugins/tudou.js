@@ -17,22 +17,22 @@ function cssToLess(url) {
 	return url.replace(/\.css$/, '.less');
 }
 
+function resolveUrl(url) {
+	while(true) {
+		url = url.replace(/\w+\/\.\.\//g, '');
+		if (!/\.\.\//.test(url)) {
+			break;
+		}
+	}
+	url = url.replace(/\.\//g, '');
+	return url;
+}
+
 // 将JS代码改成AMD模块，包含路径转换，补充模块ID，模板转换等
 function fixModule(path, str) {
 	var root = path.replace(/^(.*?)[\\\/](src|build|dist)[\\\/].*$/, '$1');
 	var relativePath = path.split(Path.sep).join('/').replace(/^.+\/src\/js\//, '');
 	var mid = relativePath.replace(/\.js$/, '');
-
-	function resolveUrl(url) {
-		while(true) {
-			url = url.replace(/\w+\/\.\.\//g, '');
-			if (!/\.\.\//.test(url)) {
-				break;
-			}
-		}
-		url = url.replace(/\.\//g, '');
-		return url;
-	}
 
 	function fixDep(s, format) {
 		if (format) {
@@ -74,17 +74,43 @@ function fixModule(path, str) {
 		return str += '\n/* autogeneration */\n"define" in this && define("' + mid + '", [], function(){});\n';
 	}
 
-	// JS模板转换
+	return str;
+}
+
+// Replace require.text to string
+function replaceTemplate(path, str) {
+	var root = path.replace(/^(.*?)[\\\/](src|build|dist)[\\\/].*$/, '$1');
+	// sub template
+	function replaceSubTemplate(parentPath, str) {
+		Util.info('[import template] ' + parentPath);
+		return str.replace(/<%\s*require\.text\(\s*(['"])(.+?)\1\s*\);?\s*%>/g, function($0, $1, $2) {
+			var f = $2;
+			if(/^[a-z_/]/i.test(f)) {
+				f = root + '/src/js/' + f;
+			}
+			else {
+				f = parentPath.replace(/[\w-]+\.\w+$/, '') + f;
+				f = resolveUrl(f);
+			}
+			var s = Util.readFileSync(f, 'utf-8');
+			s = replaceSubTemplate(f, s);
+			s = s.replace(/^\uFEFF/, '');
+			return s;
+		});
+	}
+
+	// replace template string
 	str = str.replace(/(\b)require\.text\(\s*(['"])(.+?)\2\s*\)/g, function($0, $1, $2, $3) {
 		var f = $3;
 		if(/^[a-z_/]/i.test(f)) {
 			f = root + '/src/js/' + f;
 		}
 		else {
-			f = path.replace(/[\w-]+\.js$/, '') + f;
+			f = path.replace(/[\w-]+\.\w+$/, '') + f;
 			f = resolveUrl(f);
 		}
 		var s = Util.readFileSync(f, 'utf-8');
+		s = replaceSubTemplate(f, s);
 		s = s.replace(/^\uFEFF/, '');
 		s = s.replace(/\\/g, '\\\\');
 		s = s.replace(/(\r\n|\r|\n)\s*/g, '\\n');
@@ -121,16 +147,10 @@ function merge(path, callback) {
 		return;
 	}
 
-	if (/src\/js\/(lib|lite|loader)\.js$/.test(newPath)) {
-
-		// var str = Util.readFileSync(path, 'utf-8');
-		// var debugStr = Util.readFileSync(root + '/src/js/lib/debug.js', 'utf-8');
-		// return callback('application/javascript', str + debugStr);
-
-	} else if (/src\/js\/.+\.js$/.test(newPath)) {
-
+	if (!/src\/js\/(lib|lite|loader)\.js$/.test(newPath) && /src\/js\/.+\.js$/.test(newPath)) {
 		var str = Util.readFileSync(path, 'utf-8');
 		str = fixModule(path, str);
+		str = replaceTemplate(path, str);
 		return callback('application/javascript', str);
 	}
 
