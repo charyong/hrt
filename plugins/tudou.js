@@ -133,7 +133,7 @@ function merge(path, callback) {
 
 		var parser = new(Less.Parser)({
 			env : 'development',
-			dumpLineNumbers : 'all',
+			dumpLineNumbers : 'comments',
 			paths : ['.', root + '/src/css'],
 			filename : path,
 		});

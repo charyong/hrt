@@ -1,6 +1,6 @@
 {
 	"name": "hrt",
-	"version": "1.0.19",
+	"version": "1.0.20",
 	"description": "HTTP Rewrite Tool",
 	"author": "Longhao Luo <lhluo@tudou.com>",
 	"license": "GPL",
