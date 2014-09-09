@@ -1,6 +1,6 @@
 {
 	"name": "hrt",
-	"version": "1.0.20",
+	"version": "1.0.21",
 	"description": "HTTP Rewrite Tool",
 	"author": "Longhao Luo <lhluo@tudou.com>",
 	"license": "GPL",
@@ -19,6 +19,7 @@
 	],
 	"dependencies": {
 		"mime": "~1.2.7",
+		"pkginfo": "~0.3.0",
 		"optimist": "~0.3.5",
 		"iconv-lite": "~0.2.5",
 		"request": "~2.12.0",
