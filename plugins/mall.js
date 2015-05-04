@@ -1,5 +1,4 @@
 var Fs = require('fs');
-var Fs = require('fs');
 var Path = require('path');
 var Util = require('../util');
 var Less = require('less');
@@ -32,7 +31,7 @@ function resolveUrl(url) {
 // 将JS代码改成AMD模块，包含路径转换，补充模块ID，模板转换等
 function fixModule(path, str) {
 	var root = path.replace(/^(.*?)[\\\/](src|build|dist)[\\\/].*$/, '$1');
-	var relativePath = path.split(Path.sep).join('/').replace(/^.+\/src\//, '');
+	var relativePath = path.split(Path.sep).join('/').replace(/^.+\/src\/js\//, '');
 	var mid = relativePath.replace(/\.js$/, '');
 
 	function fixDep(s, format) {
@@ -135,7 +134,7 @@ function merge(path, callback) {
 		var parser = new(Less.Parser)({
 			env : 'development',
 			dumpLineNumbers : 'comments',
-			paths : ['.', root + '/src'],
+			paths : ['.', root + '/src/css'],
 			filename : path,
 		});
 
@@ -148,7 +147,7 @@ function merge(path, callback) {
 		return;
 	}
 
-	if (!/src\/(lib|lite|loader)\.js$/.test(newPath) && /src\/.+\.js$/.test(newPath)) {
+	if (!/src\/js\/(lib|lite|loader)\.js$/.test(newPath) && /src\/js\/.+\.js$/.test(newPath)) {
 		var str = Util.readFileSync(path, 'utf-8');
 		str = fixModule(path, str);
 		str = replaceTemplate(path, str);
