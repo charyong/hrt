@@ -31,9 +31,8 @@ function resolveUrl(url) {
 // 将JS代码改成AMD模块，包含路径转换，补充模块ID，模板转换等
 function fixModule(path, str) {
 	var root = path.replace(/^(.*?)[\\\/](src|build|dist)[\\\/].*$/, '$1');
-	var relativePath = path.split(Path.sep).join('/').replace(/^.+\/src\/js\//, '');
+	var relativePath = path.split(Path.sep).join('/').replace(/^.+\/src\//, '');
 	var mid = relativePath.replace(/\.js$/, '');
-
 	function fixDep(s, format) {
 		if (format) {
 			s = s.replace(/\s/g, '');
@@ -134,7 +133,7 @@ function merge(path, callback) {
 		var parser = new(Less.Parser)({
 			env : 'development',
 			dumpLineNumbers : 'comments',
-			paths : ['.', root + '/src/css'],
+			paths : ['.', root + '/src'],
 			filename : path,
 		});
 
@@ -147,7 +146,7 @@ function merge(path, callback) {
 		return;
 	}
 
-	if (!/src\/js\/(lib|lite|loader)\.js$/.test(newPath) && /src\/js\/.+\.js$/.test(newPath)) {
+	if (!/src(\/[^\/]+)+\/(lib|lite|loader)\.js$/.test(newPath) && /src(\/[^\/]+)+\/.+\.js$/.test(newPath)) {
 		var str = Util.readFileSync(path, 'utf-8');
 		str = fixModule(path, str);
 		str = replaceTemplate(path, str);
@@ -160,78 +159,6 @@ function merge(path, callback) {
 	return callback(contentType, buffer);
 }
 
-// 合并TUI2文件
-function mergeTui2(path, callback) {
-	var root = this.config.serverRoot;
-	var subDir = /\.css$/.test(path) ? 'skin' : 'js';
-
-	var pathMap = {};
-
-	function grepPath(src) {
-		var regExp = /(?:\*|\\\\) +@import +([\/\w\-\.]+)/ig;
-		var match;
-
-		while((match = regExp.exec(src))) {
-			var filePath = match[1];
-
-			if (!/^(js|skin)\//.test(filePath)) {
-				filePath = subDir + '/' + filePath;
-			}
-
-			var path = root + '/' + filePath;
-
-			if (typeof pathMap[filePath] == 'undefined') {
-				var encoding = /\.tpl$/.test(filePath) ? 'utf8' : 'gbk';
-
-				var fileStr = Util.readFileSync(path, encoding);
-
-				if (/\.(js|css)$/.test(filePath)) {
-					grepPath(fileStr);
-				}
-
-				pathMap[filePath] = fileStr;
-			}
-		}
-	}
-
-	// 二进制文件
-	if (!/(\.js|\.css|\.tpl)$/.test(path)) {
-		var contentType = Mime.lookup(path);
-		var buffer = Util.readFileSync(path);
-
-		return callback(contentType, buffer);
-	}
-
-	// 文本文件
-	var src = Util.readFileSync(path, 'gbk');
-
-	grepPath(src);
-
-	var dist = '';
-
-	Util.each(pathMap, function(filePath, fileStr) {
-
-		if (/\.tpl$/.test(filePath)) {
-			var varName = filePath.replace(/^js\/|\.tpl$/g, '');
-			varName = 'tpl_' + varName.replace(/\//g, '_');
-
-			fileStr = fileStr.replace(/(\r\n|\r|\n)\s*/g, ' ').replace(/'/g, "\\'");
-
-			dist += 'var ' + varName + " = '" + fileStr + "';\n";
-		} else {
-			dist += fileStr + '\n';
-		}
-
-	});
-
-	dist += '\n' + src;
-
-	dist = Iconv.toEncoding(dist, 'gbk');
-
-	callback(/\.css$/.test(path) ? 'text/css' : 'application/javascript', dist);
-}
-
 exports.stripVersionInfo = stripVersionInfo;
 exports.cssToLess = cssToLess;
 exports.merge = merge;
-exports.mergeTui2 = mergeTui2;
