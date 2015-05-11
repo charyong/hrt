@@ -147,10 +147,14 @@ function merge(path, callback) {
 	}
 
 	if (!/src(\/[^\/]+)+\/(lib|lite|loader)\.js$/.test(newPath) && /src(\/[^\/]+)+\/.+\.js$/.test(newPath)) {
-		var str = Util.readFileSync(path, 'utf-8');
-		str = fixModule(path, str);
-		str = replaceTemplate(path, str);
-		return callback('application/javascript', str);
+		if(Fs.existsSync(path)){
+			var str = Util.readFileSync(path, 'utf-8');
+			str = fixModule(path, str);
+			str = replaceTemplate(path, str);
+			return callback('application/javascript', str);
+		}else{
+			return console.error('Not find File: '+ path)
+		}
 	}
 
 	var contentType = Mime.lookup(path);
