@@ -8,7 +8,7 @@ var Mime = require('mime');
 var Request = require('request');
 var Watchr = require('watchr');
 
-var HttpProxy = require('./http-proxy');
+var HttpProxy = require('http-proxy');
 var Util = require('./util');
 
 var Optimist = require('optimist');
@@ -127,14 +127,23 @@ function main() {
 		// no rewrite
 		var parsed = Url.parse(url);
 
-		var proxy = new HttpProxy.HttpProxy({
+		var proxy = new HttpProxy.createProxyServer({
 			target : {
 				host : parsed.hostname,
 				port : parsed.port || 80,
 			},
 		});
+		proxy.on('error', function (err, req, res) {
+			res.writeHead(500, {'Content-Type': 'text/plain'});
+			if ('/favicon.ico' != parsed.path) { // favicon.ico 出错不显示
+				Util.error('[proxy] '+ req.url);
+			}
 
-		proxy.proxyRequest(request, response);
+			res.end('Something went wrong. And we are reporting a custom error message.');
+		});
+
+
+		proxy.web(request, response);
 
 	}).listen(PORT);
 
