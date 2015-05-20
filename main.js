@@ -134,7 +134,7 @@ function main() {
 			},
 		});
 		proxy.on('error', function (err, req, res) {
-			res.writeHead(500, {'Content-Type': 'text/plain'});
+			// res.writeHead(500, {'Content-Type': 'text/plain'});
 			if ('/favicon.ico' != parsed.path) { // favicon.ico 出错不显示
 				Util.error('[proxy] '+ req.url);
 			}
