@@ -1,6 +1,6 @@
 {
 	"name": "hrt",
-	"version": "1.1.1",
+	"version": "1.1.2",
 	"description": "HTTP Rewrite Tool",
 	"author": "Longhao Luo <lhluo@tudou.com>",
 	"license": "GPL",
@@ -25,7 +25,8 @@
 		"request": "~2.12.0",
 		"watchr": "~2.4.3",
 		"less": "~1.4.0-b2",
-		"http-proxy": "~1.11.1"
+		"http-proxy": "~1.11.1",
+		"react-tools": "~0.13.3"
 	},
 	"devDependencies": {
 		"tap": "~0.3.2"
