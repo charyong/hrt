@@ -147,7 +147,7 @@ function merge(path, callback) {
 		return;
 	}
 
-	if (!/src(\/[^\/]+)+\/(lib|lite|loader)\.js$/.test(newPath) && /src(\/[^\/]+)+\/.+\.js$/.test(newPath)) {
+	if (!/src(\/[^\/]+)+\/(lib|lite|loader|react)\.js$/.test(newPath) && /src(\/[^\/]+)+\/.+\.js$/.test(newPath)) {
 		if(Fs.existsSync(path)){
 			var str = Util.readFileSync(path, 'utf-8');
 			str = fixModule(path, str);

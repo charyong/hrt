@@ -4,6 +4,7 @@ var Util = require('../util');
 var Less = require('less');
 var Mime = require('mime');
 var Iconv = require('iconv-lite');
+var ReactTools = require('react-tools');
 
 var RE_AUTOFIXNAME = /define\((?=[^'"])/;
 
@@ -147,11 +148,15 @@ function merge(path, callback) {
 		return;
 	}
 
-	if (!/src\/js\/(lib|lite|loader)\.js$/.test(newPath) && /src\/js\/.+\.js$/.test(newPath)) {
+	if (!/src\/js\/(lib|lite|loader|react)\.js$/.test(newPath) && /src\/js\/.+\.js$/.test(newPath)) {
 		if(Fs.existsSync(path)){
 			var str = Util.readFileSync(path, 'utf-8');
 			str = fixModule(path, str);
 			str = replaceTemplate(path, str);
+			if (str.indexOf('use strict') > 0) {
+				str = ReactTools.transform(str, { harmony: true });
+				// console.log(ReactTools.transform(str));
+			}
 			return callback('application/javascript', str);
 		}else{
 			return console.error('Not find File: '+ path)
